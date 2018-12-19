@@ -24,6 +24,7 @@ device_grp_url = "/nextgen/deviceGroup"
 task_url = "/vnms/tasks/task/"
 sfw_template_assc_url = "/nextgen/template/"
 device_template_url = "/vnms/sdwan/workflow/devices/device"
+get_template_url = "/vnms/sdwan/workflow/templates?offset=0&limit=10000"
 template_url = "/vnms/sdwan/workflow/templates/template"
 upgrade_dev_url = "/api/config/nms/actions/packages/upgrade"
 appliance_url = '/vnms/appliance/appliance?offset=0&limit=1000'
@@ -37,22 +38,26 @@ headers4 = {'Content-Type': 'application/json'}
 routing_instances = ['LAN1-VRF', 'LAN2-VRF', 'LAN3-VRF', 'LAN4-VRF', 'LAN5-VRF', 'LAN6-VRF', 'LAN7-VRF', 'LAN8-VRF', 'LAN9-VRF', 'LAN10-VRF']
 
 Solution_type = {
+    'dual_mpls' : {
+        'local_ckt_pri_1_intfs' : "MPLS-WAN1 MPLS-WAN2",
+        'remote_ckt_pri_1_intf' : "MPLS-WAN MPLS-WAN1 MPLS-WAN2",
+                  },
     'internet' : {
         'local_ckt_pri_1_intfs' : "INT-WAN",
         'remote_ckt_pri_1_intf' : "INT-WAN",
-        'local_ckt_pri_2_intfs' : "INT-WAN, INT-WAN1, INT-WAN2",
+        'local_ckt_pri_2_intfs' : "INT-WAN INT-WAN1 INT-WAN2",
         'remote_ckt_pri_2_intf' : "LTE-WAN",
                   },
     'hybrid' : {
-        'local_ckt_pri_1_intfs' : "MPLS-WAN, INT-WAN",
-        'remote_ckt_pri_1_intf' : "MPLS-WAN, MPLS-WAN1, MPLS-WAN2, INT-WAN, INT-WAN1, INT-WAN2",
+        'local_ckt_pri_1_intfs' : "MPLS-WAN INT-WAN",
+        'remote_ckt_pri_1_intf' : "MPLS-WAN MPLS-WAN1 MPLS-WAN2 INT-WAN INT-WAN1 INT-WAN2",
         'local_ckt_pri_2_intfs' : "INT-WAN",
         'remote_ckt_pri_2_intf' : "LTE-WAN",
                   },
     'dual-internet': {
-        'local_ckt_pri_1_intfs': "INT-WAN1, INT-WAN2",
-        'remote_ckt_pri_1_intf': "INT-WAN, INT-WAN1, INT-WAN2",
-        'local_ckt_pri_2_intfs': "INT-WAN1, INT-WAN2",
+        'local_ckt_pri_1_intfs': "INT-WAN1 INT-WAN2",
+        'remote_ckt_pri_1_intf': "INT-WAN INT-WAN1 INT-WAN2",
+        'local_ckt_pri_2_intfs': "INT-WAN1 INT-WAN2",
         'remote_ckt_pri_2_intf': "LTE-WAN",
     },
 

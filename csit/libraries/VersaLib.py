@@ -64,7 +64,7 @@ def setup_logger(name, filename, level=logging.DEBUG):
     logging.getLogger('').addHandler(console)
     log_file = logfile_dir + filename  + ".log"
     handler = logging.FileHandler(log_file)
-    handler.setFormatter(formatter)
+    handler.setFormatter(formatter1)
     logger = logging.getLogger(name)
     logger.setLevel(level)
     logger.addHandler(handler)
@@ -732,7 +732,10 @@ class VersaLib:
         for idx, row in csv_data_read.iterrows():
             dev_dict = row.to_dict()
             if dev_dict['SITE_TYPE'] == 'mpls':
-                continue
+                if dev_dict['DUAL_CPE'] == 'Y':
+                    dev_dict['SITE_TYPE'] = 'dual_mpls'
+                else:
+                    continue
             # print Solution_type[dev_dict['SITE_TYPE']]
             device_cmds =  template.render(dev_dict, **Solution_type[dev_dict['SITE_TYPE']])
             main_logger.info(device_cmds)
@@ -740,6 +743,8 @@ class VersaLib:
             main_logger.info(result)
             if "syntax error:" in result:
                 res_check = "syntax error. please check the command variables in log file"
+            elif "Error: element not found" in result:
+                res_check = "element not found error. please check log file"
             else:
                 commit_result = nc.send_command_expect("commit", \
                                                        expect_string='%', \
@@ -751,24 +756,37 @@ class VersaLib:
                     res_check =  "Commit success"
                 else:
                     res_check = "commit failed"
-            result_dict[dev_dict['DEVICE_NAME']] = res_check
+            result_dict[dev_dict['NAME']] = res_check
             # main_logger.info(result_dict)
             main_logger.info("CONFIG_RESULT:")
             for k, v in result_dict.iteritems():
                 main_logger.info([k , v])
         write_result_from_dict(result_dict)
         main_logger.info("Time elapsed: {}\n".format(datetime.now() - start_time))
+        main_logger.info("LOGS Stored in : " + logfile_dir)
         return
 
+    def get_PS_templates(self):
+        data = self.get_operation(get_template_url , headers3)
+        tempalte_dict = {}
+        for idx, i in enumerate(data['versanms.sdwan-template-list']):
+            print idx
+            tempalte_dict[idx] = str(i['templateName'])
+        return tempalte_dict
 
 def main():
     print datetime.now()
-    cpe1 = VersaLib('CPE100_MUM', fileDir + "/Topology/Devices.csv")
-    # print cpe1.ESP_IP
-    # val =  cpe1.get_data_dict()
-    # print val['ORG_NAME']
-    cpe1.create_PS_and_DG('Post_staging_template.j2', 'Device_group_template.j2', 'PS_main_template_modify.j2')
-    cpe1.pre_onboard_work('Device_template.j2', 'Staging_server_config.j2', 'staging_cpe.j2')
+    cpe1 = VersaLib('CPE100_MUM', topofile=fileDir + "/Topology/Devices.csv")
+    main_logger = setup_logger('Versa-director', 'Post_staging_templates')
+    temp_data = cpe1.get_PS_templates()
+    for idx , i in  temp_data.iteritems():
+        main_logger.info(i)
+    # cpe1 = VersaLib('CPE100_MUM', fileDir + "/Topology/Devices.csv")
+    # # print cpe1.ESP_IP
+    # # val =  cpe1.get_data_dict()
+    # # print val['ORG_NAME']
+    # cpe1.create_PS_and_DG('Post_staging_template.j2', 'Device_group_template.j2', 'PS_main_template_modify.j2')
+    # cpe1.pre_onboard_work('Device_template.j2', 'Staging_server_config.j2', 'staging_cpe.j2')
     # cpe1.cpe_onboard_call()
     # cpe1_dev_info_on_vd =  cpe1.get_device_info()
     # print cpe1_dev_info_on_vd

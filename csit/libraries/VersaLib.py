@@ -730,11 +730,19 @@ class VersaLib:
         csv_data_read = pd.read_csv(device_file)
         result_dict = {}
         for idx, row in csv_data_read.iterrows():
+            res_check = ""
             dev_dict = row.to_dict()
-            if dev_dict['SITE_TYPE'] == 'mpls':
+            if isinstance(dev_dict['SITE_TYPE'], float):
+                if math.isnan(dev_dict['SITE_TYPE']):
+                    res_check += "Site type is empty"
+                    result_dict[dev_dict['NAME']] = res_check
+                    continue
+            elif dev_dict['SITE_TYPE'] == 'mpls':
                 if dev_dict['DUAL_CPE'] == 'Y':
                     dev_dict['SITE_TYPE'] = 'dual_mpls'
                 else:
+                    res_check += "Single MPLS site. No changes commited"
+                    result_dict[dev_dict['NAME']] = res_check
                     continue
             # print Solution_type[dev_dict['SITE_TYPE']]
             device_cmds =  template.render(dev_dict, **Solution_type[dev_dict['SITE_TYPE']])
@@ -742,20 +750,20 @@ class VersaLib:
             result = self.device_config_commands_wo_split(nc, device_cmds)
             main_logger.info(result)
             if "syntax error:" in result:
-                res_check = "syntax error. please check the command variables in log file"
+                res_check += "syntax error found."
             elif "Error: element not found" in result:
-                res_check = "element not found error. please check log file"
+                res_check += "element not found error."
+            # else:
+            commit_result = nc.send_command_expect("commit", \
+                                                   expect_string='%', \
+                                                   strip_prompt=False, strip_command=False, max_loops=5000)
+            main_logger.info(commit_result)
+            if "No modifications to commit." in commit_result:
+                res_check += "No modifications to commit."
+            elif "Commit complete." in commit_result:
+                res_check += "Commit success."
             else:
-                commit_result = nc.send_command_expect("commit", \
-                                                       expect_string='%', \
-                                                       strip_prompt=False, strip_command=False, max_loops=5000)
-                main_logger.info(commit_result)
-                if "No modifications to commit." in commit_result:
-                    res_check = "No modifications to commit."
-                elif "Commit complete." in commit_result:
-                    res_check =  "Commit success"
-                else:
-                    res_check = "commit failed"
+                res_check += "commit failed.Check log"
             result_dict[dev_dict['NAME']] = res_check
             # main_logger.info(result_dict)
             main_logger.info("CONFIG_RESULT:")

@@ -29,6 +29,7 @@ template_url = "/vnms/sdwan/workflow/templates/template"
 upgrade_dev_url = "/api/config/nms/actions/packages/upgrade"
 appliance_url = '/vnms/appliance/appliance?offset=0&limit=1000'
 package_url = '/api/operational/nms/packages/package?select=name;uri'
+org_url = '/vnms/sdwan/workflow/orgs/org'
 headers = {'Accept': 'application/vnd.yang.data+json'}
 headers2 = {'Accept': 'application/vnd.yang.data+json', 'Content-Type': 'application/vnd.yang.data+json'}
 headers3 = {'Accept': 'application/json', 'Content-Type': 'application/json'}
@@ -64,7 +65,37 @@ Solution_type = {
 }
 
 
-
+NODE_DEVICE_DB = {
+	"BLR": {
+		"WC1": {
+			"HOST_NAME": "NV-WC01-N2-BLR",
+			"MULTI_NODE_RR": "YES",
+			"MULTI_NODE_RR_CLIENTS": "NV-WC01-N4-MUM",
+			"RR_CLIENTS": "NV-GW01-N2-BLR  NV-GW02-N2-BLR",
+			"SITE_VXLAN_IP_PREFIX": "10.",
+			"SITE_VXLAN_IP_SUFFIX": ".0.23",
+			"SITE_ESP_IP_PREFIX": "10.",
+			"SITE_ESP_IP_SUFFIX": "64.23",
+			"MANAGEMENT_NW_SUBNET": "10.91.140.0/22",
+			"LCC": "91"
+		},
+		"WC2": {
+			"HOST_NAME": "NV-WC02-N2-BLR",
+			"MULTI_NODE_RR": "",
+			"MULTI_NODE_RR_CLIENTS": "",
+            "MULTI_NODE_RR_SERVER": "NV-WC02-N4-MUM",
+			"RR_CLIENTS": "NV-GW01-N2-BLR  NV-GW02-N2-BLR",
+			"SITE_VXLAN_IP_PREFIX": "10.",
+			"SITE_VXLAN_IP_SUFFIX": ".0.24",
+			"SITE_ESP_IP_PREFIX": "10.",
+			"SITE_ESP_IP_SUFFIX": "64.24",
+			"MANAGEMENT_NW_SUBNET": "10.91.140.0/22",
+			"LCC": "91"
+		},
+		"GW1": {},
+		"GW2": {}
+	}
+}
 
 #Commands
 cmd1 = 'show interfaces brief | tab | nomore'

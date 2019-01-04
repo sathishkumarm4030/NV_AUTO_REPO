@@ -1,0 +1,175 @@
+Device_name,Config_Result
+IPC04248-SIN-PS-HD-LIB,element not found error.No modifications to commit.
+IPC060302230-FRA-PS-HWD-P,Site type is empty
+IPC04489-BRU-PS-HS-LIB,element not found error.Commit success.
+IPC060302230-FRA-PS-HWD-S,Site type is empty
+IPC04358-FRA-PS-D-MOP-STO,element not found error.Commit success.
+IPC04489-MAD-PS-D-MPLS,element not found error.Commit success.
+IPC04932-FRA-PS-M,Single MPLS site. No changes commited
+IPC04694-FRA-PS-ID-LIB,element not found error.Commit success.
+IPC04603-BRU-PS-M-Fiber,Single MPLS site. No changes commited
+IPC04968-FRA-PS-ID-LTE,element not found error.Commit success.
+IPC04358-XBT-PS-M-DUB000152,Single MPLS site. No changes commited
+IPC04624-MAD-PS-D-MPLS,element not found error.Commit success.
+IPC04305W-FRA-PS-HD,element not found error.No modifications to commit.
+IPC04248-TYO-PS-ID-LIB,element not found error.No modifications to commit.
+IPC03087-FRA-PS-ID-LIB,element not found error.No modifications to commit.
+IPC04758-SIN-PS-D-MPLS,element not found error.Commit success.
+IPC04358-FRA-PS-D-MOP-OSLO,element not found error.Commit success.
+IPC04358-BRU-PS-D-MOS,element not found error.Commit success.
+IPC04624-FRA-PS-D-INT-LIB,element not found error.Commit success.
+IPC04358-BRU-PS-D-MOP,element not found error.Commit success.
+IPC01941W-BRU-PS-IS-LIB-2LAN,element not found error.No modifications to commit.
+IPC04932-BRU-PS-M-EAN000181,Single MPLS site. No changes commited
+IPC04358-XBT-PS-D-MOP-LYON,element not found error.Commit success.
+TACIPC99-BRU-PS-M,Single MPLS site. No changes commited
+IPC04694-FRA-PS-IS-LIB,element not found error.Commit success.
+IPC03024-BRU-PS-IS-LIB,element not found error.No modifications to commit.
+IPC04248-SIN-PS-ID-LIB,element not found error.No modifications to commit.
+IPC04624-NYC-PS-D-MOP,element not found error.Commit success.
+TACIPC99-BRU-PS-IS,element not found error.Commit success.
+IPC04475-FRA-PS-ID-LIB,element not found error.Commit success.
+IPC04489-MAD-PS-D-INT-LIB,element not found error.Commit success.
+IPC04358-FRA-PS-D-MOS-VIE,element not found error.Commit success.
+IPC04624-MAD-PS-ID,element not found error.Commit success.
+IPC04248-NYC-PS-M,Single MPLS site. No changes commited
+TACIPC99-BRU-PS-ID,element not found error.Commit success.
+IPC041103199-BRU-PS-HS-LIB,element not found error.No modifications to commit.
+IPC04624-FRA-PS-D-MPLS-LIB,element not found error.Commit success.
+IPC03024-XBT-PS-HD-LIB,element not found error.No modifications to commit.
+IPC04358-MAD-PS-M-BCN,Single MPLS site. No changes commited
+IPC01945W-FRA-PS-IS,element not found error.No modifications to commit.
+IPC04578-FRA-PS-HD-LIB,element not found error.Commit success.
+IPC04578-FRA-PS-HS-LIB-M-FIBER-P5,element not found error.Commit success.
+IPC04624-BRU-PS-IS,element not found error.Commit success.
+IPC01945W-FRA-PS-ID,element not found error.No modifications to commit.
+IPC01941W-BRU-PS-HS-LIB,element not found error.No modifications to commit.
+IPC04248-SIN-PS-M,Single MPLS site. No changes commited
+IPC04489-MAD-PS-D-MPLS-LIB,element not found error.Commit success.
+IPC04514-FRA-PS-DHI-BER005236,Site type is empty
+IPC01817-FRA-PS-HS-LIB,element not found error.No modifications to commit.
+IPC04946-FRA-PS-D-MPLS,element not found error.Commit success.
+IPC04472-FRA-PS-IS-LIB,element not found error.Commit success.
+IPC04358-FRA-PS-D-MOS-STO,element not found error.Commit success.
+IPC04624-MAD-PS-D-INT,element not found error.Commit success.
+IPC04248-XBT-PS-HS-LIB,element not found error.No modifications to commit.
+IPC04624-MAD-PS-D-MOS,element not found error.Commit success.
+IPC04624-MAD-PS-D-MOP,element not found error.Commit success.
+IPC04694-FRA-PS-HD-LIB,element not found error.Commit success.
+IPC04475-FRA-PS-IS-LIB,element not found error.Commit success.
+IPC04578-FRA-PS-IS-LIB,element not found error.Commit success.
+IPC04624-BRU-PS-M,Single MPLS site. No changes commited
+IPC04514-BRU-PS-DHM-CES000352,Site type is empty
+IPC04603-MAD-PS-HD,element not found error.Commit success.
+IPC04624-FRA-PS-IS-LIB,element not found error.Commit success.
+IPC04694-FRA-PS-M,Single MPLS site. No changes commited
+IPC03094-MAD-PS-IS,element not found error.No modifications to commit.
+IPC04624-FRA-PS-D-INT,element not found error.Commit success.
+IPC04624-FRA-PS-HS,element not found error.Commit success.
+IPC04514-FRA-PS-DHM-BER000439,Site type is empty
+IPC01941W-NYC-PS-HS-LIB,element not found error.No modifications to commit.
+IPC04603-BRU-PS-HD,element not found error.Commit success.
+IPC04358-BRU-PS-D-MOP-GENT,element not found error.Commit success.
+IPC04514-FRA-PS-DHI-STO000035,Site type is empty
+IPC05020-MAD-PS-D-INT,element not found error.Commit success.
+IPC04624-FRA-PS-D-MOS,element not found error.Commit success.
+IPC04624-FRA-PS-D-MOP,element not found error.Commit success.
+IPC04489-MAD-PS-D-INT,element not found error.Commit success.
+IPC03087-BRU-PS-ID-LIB,element not found error.No modifications to commit.
+IPC04358-FRA-PS-D-MOS-IST,element not found error.Commit success.
+IPC05020-FRA-PS-D-MPLS,element not found error.Commit success.
+IPC04248-BRU-PS-IS-LIB,element not found error.No modifications to commit.
+IPC04624-FRA-PS-ID,element not found error.Commit success.
+IPC05020-BRU-PS-M,Single MPLS site. No changes commited
+IPC04305W-FRA-PS-ID,element not found error.Commit success.
+IPC04624-MAD-PS-M,Single MPLS site. No changes commited
+IPC04624-BRU-PS-D-MPLS,element not found error.Commit success.
+IPC04758-SIN-PS-D-INT,element not found error.Commit success.
+IPC04472-MAD-PS-HS-LIB,element not found error.Commit success.
+IPC01941W-BRU-PS-IS-LIB,element not found error.No modifications to commit.
+IPC04624-FRA-PS-IS,element not found error.Commit success.
+IPC04248-XBT-PS-M,Single MPLS site. No changes commited
+IPC04624-FRA-PS-D-IOP,element not found error.Commit success.
+IPC03024-XBT-PS-ID-LIB,element not found error.No modifications to commit.
+IPC05020-FRA-PS-D-INT,element not found error.Commit success.
+IPC04358-BRU-PS-D-MOS-AMS,element not found error.Commit success.
+IPC04624-FRA-PS-M,Single MPLS site. No changes commited
+IPC04472-XBT-PS-HS-LIB,element not found error.Commit success.
+IPC04358-FRA-PS-D-MOS-JOBURG,element not found error.Commit success.
+IPC05020-MAD-PS-D-MPLS,element not found error.Commit success.
+IPC04603-BRU-PS-M,Single MPLS site. No changes commited
+IPC05020-BRU-PS-M-COPPER,Single MPLS site. No changes commited
+IPC04489-MAD-PS-HS-LIB,element not found error.Commit success.
+IPC04458-MAD-PS-IS,element not found error.Commit success.
+IPC04472-BRU-PS-HS-LIB,element not found error.Commit success.
+IPC04358-XBT-PS-M-JEV000038,Single MPLS site. No changes commited
+IPC04358-FRA-PS-D-MOP-IST,element not found error.Commit success.
+IPC04946-FRA-PS-HS-LIB,element not found error.Commit success.
+IPC04358-FRA-PS-D-MOP-VIE,element not found error.Commit success.
+IPC04946-FRA-PS-D-INT,element not found error.Commit success.
+IPC04489-FRA-PS-D-MPLS-LIB,element not found error.Commit success.
+IPC04489-FRA-PS-D-INT-LIB,element not found error.Commit success.
+IPC04603-MAD-PS-HD-LIB,element not found error.Commit success.
+IPC04248-HKG-PS-M,Single MPLS site. No changes commited
+IPC04248-TYO-PS-M,Single MPLS site. No changes commited
+IPC01156-FRA-PS-H-LIB,element not found error.No modifications to commit.
+IPC01941W-FRA-PS-HS-LIB,element not found error.No modifications to commit.
+IPC01941W-NYC-PS-IS-LIB,element not found error.No modifications to commit.
+IPC060302230-FRA-PS-IS,element not found error.Commit success.
+IPC04624-BRU-PS-D-INT,element not found error.Commit success.
+IPC04305W-FRA-PS-HWD-S,Site type is empty
+IPC04305W-FRA-PS-HWD-P,Site type is empty
+IPC04624-FRA-PS-D-MPLS-BSK,element not found error.Commit success.
+IPC04248-HKG-PS-HD-LIB,element not found error.No modifications to commit.
+IPC02267-BRU-PS-HD-LIB,element not found error.No modifications to commit.
+IPC04248-HKG-PS-ID-LIB,element not found error.No modifications to commit.
+IPC04366-SIN-PS-HS,element not found error.Commit success.
+IPC04578-FRA-PS-ID-LIB,element not found error.Commit success.
+IPC04366-MAD-PS-DIS,element not found error.Commit success.
+IPC04624-FRA-PS-D-INT-BSK,element not found error.Commit success.
+IPC04472-FRA-PS-M,Single MPLS site. No changes commited
+IPC04489-FRA-PS-D-INT,element not found error.Commit success.
+IPC04489-FRA-PS-HS,element not found error.Commit success.
+IPC04248-NYC-PS-ID-LIB,element not found error.No modifications to commit.
+IPC04932-BRU-PS-M,Single MPLS site. No changes commited
+IPC01941W-MAD-PS-HS-LIB,element not found error.No modifications to commit.
+IPC04382-MAD-PS-ID-LIB,element not found error.Commit success.
+IPC04472-FRA-PS-HS-LIB,element not found error.Commit success.
+IPC04624-FRA-PS-D-MPLS,element not found error.Commit success.
+IPC03024-XBT-PS-IS-LIB,element not found error.No modifications to commit.
+IPC04624-MAD-PS-IS,element not found error.Commit success.
+IPC04248-XBT-PS-ID-LIB,element not found error.No modifications to commit.
+IPC04624-MAD-PS-M-PRT021310,Single MPLS site. No changes commited
+IPC04472-MAD-PS-HD-LIB,element not found error.Commit success.
+IPC04624-NYC-PS-D-MOS,element not found error.Commit success.
+IPC04733-SIN-PS-IS-LIB,element not found error.Commit success.
+IPC04370-FRA-PS-HS,element not found error.Commit success.
+IPC04514-FRA-PS-DHM-STO000030,Site type is empty
+IPC04248-TYO-PS-HD-LIB,element not found error.No modifications to commit.
+IPC04514-BRU-PS-DHI-CES000353,Site type is empty
+IPC04578-FRA-PS-HS-LIB-SUI000288,element not found error.Commit success.
+IPC04968-FRA-PS-IS,element not found error.Commit success.
+IPC04366-FRA-PS-DIS,element not found error.Commit success.
+IPC04358-MAD-PS-D-MOS,element not found error.Commit success.
+IPC04358-MAD-PS-D-MOP,element not found error.Commit success.
+IPC04624-BRU-PS-IS-LIB,element not found error.Commit success.
+IPC04475-FRA-PS-HS-LIB,element not found error.Commit success.
+IPC04968-FRA-PS-ID,element not found error.Commit success.
+IPC04458-MAD-PS-HS,element not found error.Commit success.
+IPC04358-FRA-PS-D-MOS-OSLO,element not found error.Commit success.
+IPC04358-XBT-PS-D-MOS-LYON,element not found error.Commit success.
+IPC04489-FRA-PS-D-MPLS,element not found error.Commit success.
+IPC04624-FRA-PS-D-IOS,element not found error.Commit success.
+IPC04578-FRA-PS-HS-LIB,element not found error.Commit success.
+IPC04624-MAD-PS-HS,element not found error.Commit success.
+IPC04358-BRU-PS-D-MOS-GENT,element not found error.Commit success.
+IPC04489-NYC-PS-HS-LIB,element not found error.Commit success.
+IPC01945W-FRA-PS-M,Single MPLS site. No changes commited
+IPC04358-BRU-PS-D-MOP-AMS,element not found error.Commit success.
+IPC04624-FRA-PS-HD,element not found error.Commit success.
+IPC04884-FRA-PS-HS-LIB,element not found error.Commit success.
+IPC04694-FRA-PS-HS-LIB,element not found error.Commit success.
+IPC04624-MAD-PS-HD,element not found error.Commit success.
+IPC04358-FRA-PS-D-MOP-JOBURG,element not found error.Commit success.
+IPC04489-FRA-PS-HS-LIB,element not found error.Commit success.
+IPC04248-FRA-PS-HS-LIB,element not found error.No modifications to commit.

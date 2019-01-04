@@ -124,6 +124,7 @@ class VersaLib:
             if 'device_type' in self.__dict__:
                 if self.device_type == 'versa_director':
                     self.vdhead = 'https://' + self.mgmt_ip + ':9182'
+                    self.vddata_dict = self.__dict__
                 else:
                     self.vddata = csv_data_read.loc[csv_data_read['device_type'] == 'versa_director']
                     self.vdcsv_dict = self.vddata.set_index('DUTs').T.to_dict()
@@ -782,14 +783,97 @@ class VersaLib:
             tempalte_dict[idx] = str(i['templateName'])
         return tempalte_dict
 
+    def Create_Org(self, org_template, org_data, org_name = ""):
+        curr_file_dir = os.path.dirname(org_template)
+        curr_file_name = os.path.basename(org_template)
+        curr_file_loader = FileSystemLoader(curr_file_dir)
+        curr_env = Environment(loader=curr_file_loader)
+        template = curr_env.get_template(curr_file_name)
+        csv_data_read = pd.read_csv(org_data)
+        if org_name != "":
+            csv_data_read = csv_data_read.loc[csv_data_read['ORG_NAME'] == org_name]
+        for idx, row in csv_data_read.iterrows():
+            res_check = ""
+            org_data = row.to_dict()
+            # print org_data
+            org_body =  template.render(org_data)
+            print org_body
+            self.post_operation(org_url, headers3, org_body)
+            time.sleep(5)
+            task_id = self.rest_operation_ret_task_id(org_url+ "/deploy/" + \
+                                                            org_data['ORG_NAME'], headers3, org_body)
+            time.sleep(5)
+            print task_id
+            task_state = "0"
+            while task_state != "100":
+                task_state = self.check_task_status(task_id)
+            task_result = self.get_task_result(task_id)
+            if task_result == "PASS":
+                print "Org deployed"
+            else:
+                print "Org deployment failed"
+                exit()
+            get_device_data = self.get_operation(org_url + "/" + org_data['ORG_NAME'], headers3)
+            print get_device_data
+            time.sleep(5)
+            print org_data
+
+
+    def Config_Node_Devices(self, device_name, org_name, node_template, node_data):
+        # nc = self.login()
+        curr_file_dir = os.path.dirname(node_template)
+        curr_file_name = os.path.basename(node_template)
+        curr_file_loader = FileSystemLoader(fileDir + "/libraries/J2_temps/ORG_CREATION")
+        curr_env = Environment(loader=curr_file_loader)
+        template = curr_env.get_template(curr_file_name)
+        csv_data_read = pd.read_csv(node_data)
+        csv_data_read = csv_data_read.loc[csv_data_read['DEVICE_NAME'] == device_name]
+        csv_data_read = csv_data_read.loc[csv_data_read['ORG_NAME'] == org_name]
+        for idx, row in csv_data_read.iterrows():
+            res_check = ""
+            org_data = row.to_dict()
+            for k, v in org_data.iteritems():
+                if isinstance(v, float):
+                    if math.isnan(v):
+                        org_data[k] = ""
+            device_cmds =  template.render(org_data)
+            print device_cmds
+        #     result = self.device_config_commands_wo_split(nc, device_cmds)
+        #     print result
+        #     if "syntax error:" in result:
+        #         res_check += "syntax error found."
+        #     elif "Error: element not found" in result:
+        #         res_check += "element not found error."
+        #     # else:
+        #     commit_result = nc.send_command_expect("commit", \
+        #                                            expect_string='%', \
+        #                                            strip_prompt=False, strip_command=False, max_loops=5000)
+        #     print commit_result
+        #     if "No modifications to commit." in commit_result:
+        #         res_check += "No modifications to commit."
+        #     elif "Commit complete." in commit_result:
+        #         res_check += "Commit success."
+        #     else:
+        #         res_check += "Commit failed."
+        #
+        return res_check
+
+
+
 def main():
     print datetime.now()
-    cpe1 = VersaLib('CPE100_MUM', topofile=fileDir + "/Topology/Devices.csv")
-    main_logger = setup_logger('Versa-director', 'Post_staging_templates')
-    temp_data = cpe1.get_PS_templates()
-    for idx , i in  temp_data.iteritems():
-        main_logger.info(i)
-    # cpe1 = VersaLib('CPE100_MUM', fileDir + "/Topology/Devices.csv")
+    cpe1 = VersaLib('VD1', topofile=fileDir + "/Topology/Devices.csv")
+    #
+    # # cpe1.Create_Org(org_template=fileDir + "/libraries/J2_temps/org_creation_template.j2", org_data=fileDir + "/Topology/ORG_DATA.csv")
+    # # cpe1.Create_Org(org_template=fileDir + "/libraries/J2_temps/org_creation_template.j2", org_data=fileDir + "/Topology/ORG_DATA.csv",org_name="AUTO_ORG_3")
+    result = cpe1.Config_Node_Devices("NV-WC01-N2-BLR", "AADEC26", node_template="WC_template.j2", node_data=fileDir + "/Topology/ORG_CREATE.csv")
+    print result
+    # cpe1 = VersaLib('AADEC26_CPE1_MUM', topofile=fileDir + "/Topology/Devices.csv")
+    # main_logger = setup_logger('Versa-director', 'Post_staging_templates')
+    # temp_data = cpe1.get_PS_templates()
+    # for idx , i in  temp_data.iteritems():
+    #     main_logger.info(i)
+    # cpe1 = VersaLib('CPE42', topofile=fileDir + "/Topology/Devices.csv")
     # # print cpe1.ESP_IP
     # # val =  cpe1.get_data_dict()
     # # print val['ORG_NAME']
@@ -820,7 +904,7 @@ def main():
     # result = cpe1.send_commands_and_expect("show interfaces brief | match ptvi33 | tab")
     # print "*" * 20 + "\n" + result
     # ##############################################
-    # cpe2 = VersaLib('C2_MUM', fileDir + "/Topology/Devices.csv")
+    # cpe2 = VersaLib('JCPE47', topofile=fileDir + "/Topology/Devices.csv")
     # cpe2.pre_onboard_work('Device_template.j2', 'Staging_server_config.j2', 'staging_cpe.j2')
     # cpe2.cpe_onboard_call()
     # cpe2_dev_info_on_vd =  cpe2.get_device_info()

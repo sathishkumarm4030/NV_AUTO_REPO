@@ -1,0 +1,269 @@
+delete devices template IPC00011-N2-PS-H-LIB-Manish config org org-services IPC000110 sd-wan policies sdwan-policy-group Default-Policy rules rule Default-Rule
+set devices template IPC00011-N2-PS-H-LIB-Manish config org org-services IPC000110 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 1 circuit-names local [ MPLS-WAN1 MPLS-WAN2 ]
+set devices template IPC00011-N2-PS-H-LIB-Manish config org org-services IPC000110 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 1 circuit-names remote [ MPLS-WAN MPLS-WAN1 MPLS-WAN2 ]
+
+
+set devices template IPC00011-N2-PS-H-LIB-Manish config org org-services IPC000110 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE connection-selection-method weighted-round-robin
+set devices template IPC00011-N2-PS-H-LIB-Manish config org org-services IPC000110 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE recompute-timer 40
+set devices template IPC00011-N2-PS-H-LIB-Manish config org org-services IPC000110 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE encryption optional
+set devices template IPC00011-N2-PS-H-LIB-Manish config org org-services IPC000110 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE symmetric-forwarding enable
+set devices template IPC00011-N2-PS-H-LIB-Manish config org org-services IPC000110 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE description DEFAULT-TRAFFIC-RULE
+set devices template IPC00011-N2-PS-H-LIB-Manish config org org-services IPC000110 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE set action allow
+set devices template IPC00011-N2-PS-H-LIB-Manish config org org-services IPC000110 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE set forwarding-profile DEFAULT-TRAFFIC-PROFILE
+move devices template IPC00011-N2-PS-H-LIB-Manish config org org-services IPC000110 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE last
+
+configure
+Entering configuration mode private
+[ok][2018-12-24 06:37:20]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% delete devices template IPC00011-N2-PS-H-LIB-Manish config orgs org-services IPC000110 sd-wan policies sdwan-policy-group Default-Policy rules rule Default-Rule
+Error: element not found
+[error][2018-12-24 06:37:20]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template IPC00011-N2-PS-H-LIB-Manish  config orgs org-services IPC000110 sd-wan forwarding-profiles forwarding-profile  DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 1 circuit-names local [ MPLS-WAN1 MPLS-WAN2 ]
+[ok][2018-12-24 06:37:21]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template IPC00011-N2-PS-H-LIB-Manish  config orgs org-services IPC000110 sd-wan forwarding-profiles forwarding-profile  DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 1 circuit-names remote [ MPLS-WAN MPLS-WAN1 MPLS-WAN2 ]
+[ok][2018-12-24 06:37:22]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template IPC00011-N2-PS-H-LIB-Manish  config orgs org-services IPC000110 sd-wan forwarding-profiles forwarding-profile  DEFAULT-TRAFFIC-PROFILE connection-selection-method weighted-round-robin
+[ok][2018-12-24 06:37:22]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template IPC00011-N2-PS-H-LIB-Manish  config orgs org-services IPC000110 sd-wan forwarding-profiles forwarding-profile  DEFAULT-TRAFFIC-PROFILE recompute-timer 40
+[ok][2018-12-24 06:37:22]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template IPC00011-N2-PS-H-LIB-Manish  config orgs org-services IPC000110 sd-wan forwarding-profiles forwarding-profile  DEFAULT-TRAFFIC-PROFILE encryption optional
+[ok][2018-12-24 06:37:23]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template IPC00011-N2-PS-H-LIB-Manish  config orgs org-services IPC000110 sd-wan forwarding-profiles forwarding-profile  DEFAULT-TRAFFIC-PROFILE symmetric-forwarding enable
+[ok][2018-12-24 06:37:23]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template IPC00011-N2-PS-H-LIB-Manish  config orgs org-services IPC000110 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE description DEFAULT-TRAFFIC-RULE
+[ok][2018-12-24 06:37:23]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template IPC00011-N2-PS-H-LIB-Manish  config orgs org-services IPC000110 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE set action allow
+[ok][2018-12-24 06:37:24]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template IPC00011-N2-PS-H-LIB-Manish  config orgs org-services IPC000110 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE set forwarding-profile DEFAULT-TRAFFIC-PROFILE
+[ok][2018-12-24 06:37:24]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% move devices template IPC00011-N2-PS-H-LIB-Manish  config orgs org-services IPC000110 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE last
+[ok][2018-12-24 06:37:25]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+commit
+No modifications to commit.
+[ok][2018-12-24 06:37:27]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+CONFIG_RESULT:
+['IPC00011-N2-PS-H-LIB-Manish', 'element not found error.No modifications to commit.']
+delete devices template Manish-Test config org org-services IPC00011 sd-wan policies sdwan-policy-group Default-Policy rules rule Default-Rule
+set devices template Manish-Test config org org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 1 circuit-names local [ MPLS-WAN INT-WAN ]
+set devices template Manish-Test config org org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 1 circuit-names remote [ MPLS-WAN MPLS-WAN1 MPLS-WAN2 INT-WAN INT-WAN1 INT-WAN2 ]
+
+set devices template Manish-Test config org org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 2 circuit-names local [ INT-WAN ]
+
+
+set devices template Manish-Test config org org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 2 circuit-names remote [ LTE-WAN ]
+
+set devices template Manish-Test config org org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE connection-selection-method weighted-round-robin
+set devices template Manish-Test config org org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE recompute-timer 40
+set devices template Manish-Test config org org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE encryption optional
+set devices template Manish-Test config org org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE symmetric-forwarding enable
+set devices template Manish-Test config org org-services IPC00011 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE description DEFAULT-TRAFFIC-RULE
+set devices template Manish-Test config org org-services IPC00011 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE set action allow
+set devices template Manish-Test config org org-services IPC00011 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE set forwarding-profile DEFAULT-TRAFFIC-PROFILE
+move devices template Manish-Test config org org-services IPC00011 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE last
+
+delete devices template Manish-Test config orgs org-services IPC00011 sd-wan policies sdwan-policy-group Default-Policy rules rule Default-Rule
+Error: element not found
+[error][2018-12-24 06:37:28]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-Test config orgs org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 1 circuit-names local [ MPLS-WAN INT-WAN ]
+[ok][2018-12-24 06:37:29]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-Test config orgs org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 1 circuit-names remote [ MPLS-WAN MPLS-WAN1  MPLS-WAN2 INT-WAN INT-WAN1 INT-WAN2 ]
+[ok][2018-12-24 06:37:29]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-Test config orgs org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 2 circuit-names local [ INT-WAN ]
+[ok][2018-12-24 06:37:30]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-Test config orgs org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 2 circuit-names remote [ LTE-WAN ]
+[ok][2018-12-24 06:37:30]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-Test config orgs org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE connection-selection-method weighted-round-robin
+[ok][2018-12-24 06:37:30]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-Test config orgs org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE recompute-timer 40
+[ok][2018-12-24 06:37:31]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-Test config orgs org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE encryption optional
+[ok][2018-12-24 06:37:31]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-Test config orgs org-services IPC00011 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE symmetric-forwarding enable
+[ok][2018-12-24 06:37:32]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-Test config orgs org-services IPC00011 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE description DEFAULT-TRAFFIC-RULE
+[ok][2018-12-24 06:37:32]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-Test config orgs org-services IPC00011 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE set action allow
+[ok][2018-12-24 06:37:32]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-Test config orgs org-services IPC00011 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE set forwarding-profile DEFAULT-TRAFFIC-PROFILE
+[ok][2018-12-24 06:37:33]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% move devices template Manish-Test config orgs org-services IPC00011 sd-wan policies sdwan-policy-group Default-Policy rules rule  DEFAULT-TRAFFIC-RULE last
+[ok][2018-12-24 06:37:33]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+commit
+No modifications to commit.
+[ok][2018-12-24 06:37:36]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+CONFIG_RESULT:
+['Manish-Test', 'element not found error.No modifications to commit.']
+['IPC00011-N2-PS-H-LIB-Manish', 'element not found error.No modifications to commit.']
+delete devices template Manish-test-LTE config org org-services IPC00012 sd-wan policies sdwan-policy-group Default-Policy rules rule Default-Rule
+set devices template Manish-test-LTE config org org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 1 circuit-names local [ INT-WAN ]
+set devices template Manish-test-LTE config org org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 1 circuit-names remote [ INT-WAN ]
+
+set devices template Manish-test-LTE config org org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 2 circuit-names local [ INT-WAN INT-WAN1 INT-WAN2 ]
+
+
+set devices template Manish-test-LTE config org org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 2 circuit-names remote [ LTE-WAN ]
+
+set devices template Manish-test-LTE config org org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE connection-selection-method weighted-round-robin
+set devices template Manish-test-LTE config org org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE recompute-timer 40
+set devices template Manish-test-LTE config org org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE encryption optional
+set devices template Manish-test-LTE config org org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE symmetric-forwarding enable
+set devices template Manish-test-LTE config org org-services IPC00012 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE description DEFAULT-TRAFFIC-RULE
+set devices template Manish-test-LTE config org org-services IPC00012 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE set action allow
+set devices template Manish-test-LTE config org org-services IPC00012 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE set forwarding-profile DEFAULT-TRAFFIC-PROFILE
+move devices template Manish-test-LTE config org org-services IPC00012 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE last
+
+delete devices template Manish-test-LTE config orgs org-services IPC00012 sd-wan policies sdwan-policy-group Default-Policy rules  rule Default-Rule
+Error: element not found
+[error][2018-12-24 06:37:36]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-test-LTE config orgs  org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 1 circuit-names local [ INT-WAN ]
+[ok][2018-12-24 06:37:37]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-test-LTE config orgs  org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 1 circuit-names remote [ INT-WAN ]
+[ok][2018-12-24 06:37:37]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-test-LTE config orgs  org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 2 circuit-names local [ INT-WAN INT-WAN1  INT-WAN2 ]
+[ok][2018-12-24 06:37:38]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-test-LTE config orgs  org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE circuit-priorities priority 2 circuit-names remote [ LTE-WAN ]
+[ok][2018-12-24 06:37:38]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-test-LTE config orgs  org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE connection-selection-method weighted-round-robin
+[ok][2018-12-24 06:37:39]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-test-LTE config orgs  org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE recompute-timer 40
+[ok][2018-12-24 06:37:39]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-test-LTE config orgs  org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE encryption optional
+[ok][2018-12-24 06:37:39]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-test-LTE config orgs  org-services IPC00012 sd-wan forwarding-profiles forwarding-profile DEFAULT-TRAFFIC-PROFILE symmetric-forwarding enable
+[ok][2018-12-24 06:37:40]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-test-LTE config orgs  org-services IPC00012 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE description DEFAULT-TRAFFIC-RULE
+[ok][2018-12-24 06:37:40]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-test-LTE config orgs  org-services IPC00012 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE set action allow
+[ok][2018-12-24 06:37:40]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% set devices template Manish-test-LTE config orgs  org-services IPC00012 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE set forwarding-profile DEFAULT-TRAFFIC-PROFILE
+[ok][2018-12-24 06:37:41]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% move devices template Manish-test-LTE config orgs org-services IPC00012 sd-wan policies sdwan-policy-group Default-Policy rules rule DEFAULT-TRAFFIC-RULE last
+[ok][2018-12-24 06:37:41]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+commit
+No modifications to commit.
+[ok][2018-12-24 06:37:44]
+
+[edit]
+Administrator@Versa-Dir-BLR-1% 
+CONFIG_RESULT:
+['Manish-test-LTE', 'element not found error.No modifications to commit.']
+['Manish-Test', 'element not found error.No modifications to commit.']
+['IPC00011-N2-PS-H-LIB-Manish', 'element not found error.No modifications to commit.']
+Time elapsed: 0:00:23.909185
+
+LOGS Stored in : /home/sathish123/PycharmProjects/NV_LATEST_COPY/csit/LOGS/2018_12_24_10_32_35_227012/

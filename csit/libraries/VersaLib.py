@@ -185,7 +185,7 @@ class VersaLib:
             self.lan[i]['second_host'] = str(n[2])
             self.lan[i]['netmask'] = str(n.netmask)
             nw_addr = next(network_address)
-        return
+        return self.lan
 
 
 
@@ -826,7 +826,7 @@ class VersaLib:
         curr_file_loader = FileSystemLoader(fileDir + "/libraries/J2_temps/ORG_CREATION")
         curr_env = Environment(loader=curr_file_loader)
         template = curr_env.get_template(curr_file_name)
-        csv_data_read = pd.read_csv(node_data)
+        csv_data_read = pd.read_csv(fileDir + "/Topology/" + node_data)
         csv_data_read = csv_data_read.loc[csv_data_read['DEVICE_NAME'] == device_name]
         csv_data_read = csv_data_read.loc[csv_data_read['ORG_NAME'] == org_name]
         for idx, row in csv_data_read.iterrows():
@@ -836,6 +836,35 @@ class VersaLib:
                 if isinstance(v, float):
                     if math.isnan(v):
                         org_data[k] = ""
+            if org_data['DEVICE_TYPE'] == "GW":
+                ORG_ID = int(org_data['ORG_ID'])
+                org_data['ORG_ID'] = int(org_data['ORG_ID'])
+                org_data['NO_OF_VRFS'] = int(org_data['NO_OF_VRFS'])
+                org_data['VRF1_ID']	=	ORG_ID * 10 + 120
+                org_data['VXLAN_TVI_INTERFACE']	=	"tvi-0/" + str(ORG_ID * 2)
+                org_data['ESP_TVI_INTERFACE']	=	"tvi-0/" + str(ORG_ID * 2 + 1)
+                # org_data['PAIRED_TVI_INTERFACE1']	=	"tvi-0/" + str(ORG_ID * 10 + 120)
+                # org_data['PAIRED_TVI_INTERFACE2']	=	"tvi-0/" + str(ORG_ID * 10 + 2020)
+                org_data['PTVI_INTERFACE1']	=	"ptvi" + str(ORG_ID * 2)
+                org_data['PTVI_INTERFACE2']	=	"ptvi" + str(ORG_ID * 2 + 1)
+                if org_data['GW_NUMBER'] == "1" :
+                    org_data['NNI1_VLAN']	=	ORG_ID * 10 + 120
+                elif org_data['GW_NUMBER'] == "2":
+                    org_data['NNI1_VLAN'] = ORG_ID * 10 + 2020
+                self.start_vlan = int(org_data['NNI1_VLAN'])
+                org_data['NNI_LAN'] = self.set_network_items(org_data['NNI1_SUBNET'])
+                org_data['PAIRED_TVI_LAN'] = self.set_network_items(org_data['PAIRED_TVI_SUBNET'])
+
+                org_data['EXPORT_VRFS_SET'] = ""
+                org_data['LAN_VRFS_SET'] = ""
+                org_data['PAIRED_TVI_INTERFACE_SET'] =""
+                org_data['MPLS_NW_SET'] = ""
+                for i in range(1, org_data['NO_OF_VRFS'] + 1):
+                    org_data['EXPORT_VRFS_SET'] += org_data['ORG_NAME'] + "-EXPORT" + str(i) + "-VRF "
+                    org_data['LAN_VRFS_SET'] += org_data['ORG_NAME'] + "-LAN" + str(i) + "-VRF "
+                    org_data['PAIRED_TVI_INTERFACE_SET'] += "tvi-0/" + str(ORG_ID * 10 + 120  + i-1) + ".0 "
+                    org_data['PAIRED_TVI_INTERFACE_SET'] += "tvi-0/" + str(ORG_ID * 10 + 2020  + i-1) + ".0 "
+                    org_data['MPLS_NW_SET'] += org_data['ORG_NAME'] + "-MPLS" + str(i) + " "
             device_cmds =  template.render(org_data)
             print device_cmds
         #     result = self.device_config_commands_wo_split(nc, device_cmds)
@@ -863,11 +892,17 @@ class VersaLib:
 def main():
     print datetime.now()
     cpe1 = VersaLib('VD1', topofile=fileDir + "/Topology/Devices.csv")
-    #
-    # # cpe1.Create_Org(org_template=fileDir + "/libraries/J2_temps/org_creation_template.j2", org_data=fileDir + "/Topology/ORG_DATA.csv")
-    # # cpe1.Create_Org(org_template=fileDir + "/libraries/J2_temps/org_creation_template.j2", org_data=fileDir + "/Topology/ORG_DATA.csv",org_name="AUTO_ORG_3")
-    result = cpe1.Config_Node_Devices("NV-WC01-N2-BLR", "AADEC26", node_template="WC_template.j2", node_data=fileDir + "/Topology/ORG_CREATE.csv")
-    print result
+    # #
+    # # # cpe1.Create_Org(org_template=fileDir + "/libraries/J2_temps/org_creation_template.j2", org_data=fileDir + "/Topology/ORG_DATA.csv")
+    # cpe1.Create_Org(org_template=fileDir + "/libraries/J2_temps/org_creation_template.j2", org_data=fileDir + "/Topology/ORG_DATA.csv",org_name="AUTO_ORG_3")
+#     result = cpe1.Config_Node_Devices("NV-WC01-N2-BLR", "AADEC26", node_template="WC_Template.j2", node_data="WC.csv")
+#     result = cpe1.Config_Node_Devices("NV-WC02-N2-BLR", "AADEC26", node_template="WC_Template.j2", node_data="WC.csv")
+#     result = cpe1.Config_Node_Devices("NV-WC01-N4-MUM", "AADEC26", node_template="WC_Template.j2", node_data="WC.csv")
+#     result = cpe1.Config_Node_Devices("NV-WC02-N4-MUM", "AADEC26", node_template="WC_Template.j2", node_data="WC.csv")
+# #GW
+    result = cpe1.Config_Node_Devices("NV-GW01-N2-BLR", "AADEC26", node_template="GW_Template.j2", node_data="GW.csv")
+
+    # print result
     # cpe1 = VersaLib('AADEC26_CPE1_MUM', topofile=fileDir + "/Topology/Devices.csv")
     # main_logger = setup_logger('Versa-director', 'Post_staging_templates')
     # temp_data = cpe1.get_PS_templates()
@@ -904,7 +939,8 @@ def main():
     # result = cpe1.send_commands_and_expect("show interfaces brief | match ptvi33 | tab")
     # print "*" * 20 + "\n" + result
     # ##############################################
-    # cpe2 = VersaLib('JCPE47', topofile=fileDir + "/Topology/Devices.csv")
+    # cpe2 = VersaLib('CPE-46', topofile=fileDir + "/Topology/Devices.csv")
+    # cpe2.create_PS_and_DG('Post_staging_template.j2', 'Device_group_template.j2', 'PS_main_template_modify.j2')
     # cpe2.pre_onboard_work('Device_template.j2', 'Staging_server_config.j2', 'staging_cpe.j2')
     # cpe2.cpe_onboard_call()
     # cpe2_dev_info_on_vd =  cpe2.get_device_info()

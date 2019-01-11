@@ -420,6 +420,8 @@ set interfaces ptvi405 remote-address 10.202.64.24
 
 set networks AADEC-MPLS1 interfaces [ vni-0/0.2140 ]
 set orgs org AADEC available-routing-instances [ INT-TRANSP-VR MPLS-TRANSP-VR AADEC-Control-VR AADEC-EXPORT1-VRF AADEC-LAN1-VRF ]
+set devices device NV-GW01-N2-BLR config  orgs org AADEC26 available-routing-instances [ INT-TRANSP-VR MPLS-TRANSP-VR AADEC26-Control-VR AADEC26-EXPORT1-VRF AADEC26-EXPORT2-VRF AADEC26-LAN1-VRF AADEC26-LAN2-VRF ]
+
 set orgs org AADEC traffic-identification using [ ptvi404 ptvi405 tvi-0/404.0 tvi-0/405.0 tvi-0/2140.0 tvi-0/4040.0 ]
 set orgs org AADEC owned-routing-instances [ INT-TRANSP-VR MPLS-TRANSP-VR AADEC-Control-VR AADEC-EXPORT1-VRF AADEC-LAN1-VRF ]
 

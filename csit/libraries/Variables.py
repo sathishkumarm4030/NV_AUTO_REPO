@@ -24,6 +24,7 @@ device_grp_url = "/nextgen/deviceGroup"
 task_url = "/vnms/tasks/task/"
 sfw_template_assc_url = "/nextgen/template/"
 device_template_url = "/vnms/sdwan/workflow/devices/device"
+read_controllers_url = "/vnms/sdwan/workflow/controllers"
 get_template_url = "/vnms/sdwan/workflow/templates?offset=0&limit=10000"
 template_url = "/vnms/sdwan/workflow/templates/template"
 upgrade_dev_url = "/api/config/nms/actions/packages/upgrade"
@@ -34,6 +35,45 @@ headers = {'Accept': 'application/vnd.yang.data+json'}
 headers2 = {'Accept': 'application/vnd.yang.data+json', 'Content-Type': 'application/vnd.yang.data+json'}
 headers3 = {'Accept': 'application/json', 'Content-Type': 'application/json'}
 headers4 = {'Content-Type': 'application/json'}
+
+
+controllers_list = ['NV-WC01-N2-BLR', 'NV-WC01-N4-MUM', 'NV-WC01-N5-LON', 'NV-WC01-UCPE', 'NV-WC02-N4-MUM', 'NV-WC02-N5-LON', 'SAMPLE-CONTROLLER']
+
+ctlr_dict = {
+    "BLR" : ["NV-WC01-N2-BLR", "NV-WC02-N2-BLR"],
+    "MUM" : ["NV-WC01-N4-MUM", "NV-WC02-N4-MUM"],
+    #"LON" : ["NV-WC01-N5-LON", "NV-WC02-N5-LON"]
+}
+
+ctlr_list = ["NV-WC01-N2-BLR", "NV-WC02-N4-MUM"]
+
+RR_SERVER = ["NV-WC01-N2-BLR", "NV-WC02-N4-MUM"]
+
+RR_Clients = {
+    "NV-WC01-N2-BLR" : ["NV-WC01-N4-MUM", "NV-WC01-N5-LON"],
+    "NV-WC02-N4-MUM" : ["NV-WC02-N2-BLR", "NV-WC02-N5-LON"]
+}
+
+
+
+gw_dict = {
+    "BLR" : ["NV-GW01-N2-BLR", "NV-GW02-N2-BLR"],
+    "MUM": ["NV-GW02-N4-MUM"],
+    # "MUM" : ["NV-GW01-N4-MUM", "NV-GW02-N4-MUM"],
+    # "LON" : ["NV-GW01-N5-LON", "NV-GW02-N5-LON"]
+    #"LON" : ["NV-GW01-N5-LON"]
+}
+
+gw_list = []
+
+LCC_dict = {
+    "BLR" : "91",
+    "MUM" : "1091",
+    "LON" : "44"
+}
+
+
+#PAIRED_TVI_SUBNET = "10.63.47.64/30"
 
 
 routing_instances = ['LAN1-VRF', 'LAN2-VRF', 'LAN3-VRF', 'LAN4-VRF', 'LAN5-VRF', 'LAN6-VRF', 'LAN7-VRF', 'LAN8-VRF', 'LAN9-VRF', 'LAN10-VRF']
@@ -64,33 +104,167 @@ Solution_type = {
 
 }
 
+true = "true"
+false = "false"
+
+NODE_DB_form_vd = { "NV-WC02-N2-BLR" : {
+		"controllerName": "NV-WC01-N2-BLR",
+		"siteId": 23,
+		"orgName": "Colt",
+		"resourceType": "Baremetal",
+		"stagingController": true,
+		"postStagingController": true,
+		"baremetalController": {
+			"controllerInterface": {
+				"interfaceName": "vni-0/0",
+				"unitInfoList": {
+					"ipv4address": "10.63.44.36/27",
+					"ipv4dhcp": false,
+					"ipv6dhcp": false,
+					"networkName": "CONTROL",
+					"vlanId": 3002
+				}
+			},
+			"serverIP": "10.91.116.251",
+			"wanInterfaces": [{
+				"interfaceName": "vni-0/1",
+				"unitInfoList": {
+					"ipv4address": "111.93.152.123/28",
+					"ipv4dhcp": false,
+					"ipv4gateway": "111.93.152.113",
+					"ipv6dhcp": false,
+					"networkName": "INT-WAN",
+					"vlanId": 0,
+					"transportDomainList": "INTERNET-TD"
+				}
+			}]
+		},
+		"locationInfo": {
+			"country": "IN",
+			"longitude": -86.134902,
+			"latitude": 40.267194
+		}
+	}
+}
+
 
 NODE_DEVICE_DB = {
 	"BLR": {
+        "MANAGEMENT_NW_SUBNET": "10.91.140.0/22",
+        "LCC": "91",
 		"WC1": {
 			"HOST_NAME": "NV-WC01-N2-BLR",
-			"MULTI_NODE_RR": "YES",
-			"MULTI_NODE_RR_CLIENTS": "NV-WC01-N4-MUM",
-			"RR_CLIENTS": "NV-GW01-N2-BLR  NV-GW02-N2-BLR",
-			"SITE_VXLAN_IP_PREFIX": "10.",
-			"SITE_VXLAN_IP_SUFFIX": ".0.23",
-			"SITE_ESP_IP_PREFIX": "10.",
-			"SITE_ESP_IP_SUFFIX": "64.23",
-			"MANAGEMENT_NW_SUBNET": "10.91.140.0/22",
-			"LCC": "91"
+            "SITE_ID" : "23",
+			"VXLAN_IP": "10.org_id.0.23",
+			"ESP_IP": "10.org_id.64.23",
+            "WAN_INTF": {
+                "MPLS" : "10.63.151.70",
+                "INTERNET" : "111.93.152.123"
+            },
+            "SATGING_PROFILES" : {
+                "MPLS": "",
+                "INTERNET": "STAGING-INT"
+            },
+            "RR_CLIENTS" : ['MUM_WC1', 'LON_WC1']
 		},
 		"WC2": {
 			"HOST_NAME": "NV-WC02-N2-BLR",
-			"MULTI_NODE_RR": "",
-			"MULTI_NODE_RR_CLIENTS": "",
-            "MULTI_NODE_RR_SERVER": "NV-WC02-N4-MUM",
-			"RR_CLIENTS": "NV-GW01-N2-BLR  NV-GW02-N2-BLR",
-			"SITE_VXLAN_IP_PREFIX": "10.",
-			"SITE_VXLAN_IP_SUFFIX": ".0.24",
-			"SITE_ESP_IP_PREFIX": "10.",
-			"SITE_ESP_IP_SUFFIX": "64.24",
+            "SITE_ID": "24",
+            "VXLAN_IP": "10.org_id.0.24",
+            "ESP_IP": "10.org_id.64.24",
+            "WAN_INTF": {
+                "MPLS": "10.63.151.90",
+                "INTERNET": "10.63.130.90"
+            },
+            "SATGING_PROFILES": {
+                "MPLS": "STAGING-MPLS",
+                "INTERNET": "STAGING-INT"
+            }
+		},
+		"GW1": {
+			"HOST_NAME": "NV-GW01-N2-BLR",
+            "SITE_ID": "103",
+            "VXLAN_IP": "30.org_id.2.1",
+            "ESP_IP": "40.org_id.2.1",
+            "WAN_INTF": {
+                "MPLS": "10.63.151.78",
+                "INTERNET": "10.63.130.78"
+            },
+            "SATGING_PROFILES": {
+                "MPLS": "STAGING-MPLS",
+                "INTERNET": "STAGING-INT"
+            }
+		},
+		"GW2": {
+			"HOST_NAME": "NV-GW02-N2-BLR",
+            "SITE_ID": "124",
+            "VXLAN_IP": "30.org_id.2.2",
+            "ESP_IP": "40.org_id.2.2",
+            "WAN_INTF": {
+                "MPLS": "10.63.151.98",
+                "INTERNET": "10.63.130.98"
+            },
+            "SATGING_PROFILES": {
+                "MPLS": "STAGING-MPLS",
+                "INTERNET": "STAGING-INT"
+            }
+        }
+	},
+    "MUM" : {
+		"WC1": {
+			"HOST_NAME": "NV-WC01-N4-MUM",
+            "SITE_ID" : "23",
+			"SITE_VXLAN_IP": "10.org_id.0.23",
+			"SITE_ESP_IP": "10.org_id.64.23",
 			"MANAGEMENT_NW_SUBNET": "10.91.140.0/22",
-			"LCC": "91"
+			"LCC": "91",
+            "WAN_INTF": {
+                "MPLS" : "10.63.151.70",
+                "INTERNET" : "111.93.152.123"
+            },
+            "SATGING_PROFILES": {
+                "MPLS":     "MPLS-WAN-NV-WC01-N4-MUM-StagingIpsec",
+                "INTERNET": "INT-WAN-NV-WC01-N4-MUM-StagingIpsec"
+            }
+
+		},
+		"WC2": {
+            "SITE_ID" : "23",
+			"SITE_VXLAN_IP": "30.org_id.0.23",
+			"SITE_ESP_IP": "40.org_id.64.23",
+            "SATGING_PROFILES": {
+                "MPLS": "MPLS-WAN-NV-WC02-N4-MUM-StagingIpsec",
+                "INTERNET": "INT-WAN-NV-WC02-N4-MUM-StagingIpsec"
+            },
+        "RR_CLIENTS" : ['BLR_WC1', 'LON_WC1'],
+		},
+		"GW1": {},
+		"GW2": {}
+	},
+    "LON" : {
+		"WC1": {
+			"HOST_NAME": "NV-WC01-N5-LON",
+            "SITE_ID" : "23",
+			"SITE_VXLAN_IP": "10.org_id.0.23",
+			"SITE_ESP_IP": "10.org_id.64.23",
+			"MANAGEMENT_NW_SUBNET": "10.91.140.0/22",
+			"LCC": "91",
+            "WAN_INTF": {
+                "MPLS" : "10.63.151.70",
+                "INTERNET" : "111.93.152.123"
+            },
+            "SATGING_PROFILES" : {
+                "MPLS": "",
+                "INTERNET": "INT-WAN-NV-WC01-N5-LON-StagingIpsec"
+            }
+
+		},
+		"WC2": {
+            "HOST_NAME": "NV-WC02-N5-LON",
+            "SATGING_PROFILES": {
+                "MPLS": "MPLS-WAN-NV-WC02-N5-LON-StagingIpsec",
+                "INTERNET": ""
+            }
 		},
 		"GW1": {},
 		"GW2": {}

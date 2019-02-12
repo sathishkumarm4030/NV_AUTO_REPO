@@ -20,7 +20,7 @@ from Variables import *
 # from csit.libraries.Variables import *
 import json
 from jinja2 import Template
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, meta
 import ipaddress
 import ipcalc
 import itertools as it
@@ -36,7 +36,13 @@ import errno
 import csv
 currtime = str(datetime.now())
 currtime = currtime.replace(" ", "_").replace(":", "_").replace("-", "_").replace(".", "_")
+from ast import literal_eval
 
+def try_literal_eval(s):
+    try:
+        return literal_eval(s)
+    except ValueError:
+        return s
 
 
 
@@ -44,6 +50,10 @@ if __name__ == "__main__":
     fileDir = os.path.dirname(os.path.dirname(os.path.realpath('__file__')))
 else:
     fileDir = os.path.dirname(os.path.realpath('__file__'))
+
+curr_file_dir = os.path.dirname(os.path.dirname(os.path.realpath('__file__')))
+
+#print fileDir
 
 logfile_dir = os.path.dirname(os.path.dirname(os.path.realpath('__file__'))) + "/LOGS/"+ currtime + "/"
 if not os.path.exists(os.path.dirname(logfile_dir)):
@@ -55,21 +65,21 @@ if not os.path.exists(os.path.dirname(logfile_dir)):
 
 # logger.info(fileDir, also_console=True)
 
-def setup_logger(name, filename, level=logging.DEBUG):
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    formatter1 = logging.Formatter("%(message)s")
-    console = logging.StreamHandler()
-    console.setLevel(logging.DEBUG)
-    console.setFormatter(formatter1)
-    logging.getLogger('').addHandler(console)
-    log_file = logfile_dir + filename  + ".log"
-    handler = logging.FileHandler(log_file)
-    handler.setFormatter(formatter1)
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    logger.addHandler(handler)
-    logger = logging.getLogger(name)
-    return logger
+# def setup_logger(name, filename, level=logging.DEBUG):
+#     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+#     formatter1 = logging.Formatter("%(message)s")
+#     console = logging.StreamHandler()
+#     console.setLevel(logging.DEBUG)
+#     console.setFormatter(formatter1)
+#     logging.getLogger('').addHandler(console)
+#     log_file = logfile_dir + filename  + ".log"
+#     handler = logging.FileHandler(log_file)
+#     handler.setFormatter(formatter1)
+#     logger = logging.getLogger(name)
+#     logger.setLevel(level)
+#     logger.addHandler(handler)
+#     logger = logging.getLogger(name)
+#     return logger
 
 def write_result_from_dict(results):
     data_header = ['Device_name', 'Config_Result']
@@ -91,10 +101,15 @@ class VersaLib:
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 
     def __init__(self, device_name, **kwargs):
+        self.ctlr_dict =  ctlr_dict
+        self.ctlr_list =  ctlr_list
+        self.gw_dict =  gw_dict
+        self.gw_list =  gw_list
+        self.ndb = {}
         if kwargs is not None:
             for k, v in kwargs.iteritems(): exec("self."+ k+'=v')
         if 'topofile' in self.__dict__:
-            csv_data_read = pd.read_csv(self.topofile, dtype=object)
+            csv_data_read = pd.read_csv(curr_file_dir + "/Topology/" + self.topofile, dtype=object)
             self.device_name = device_name
             data = csv_data_read.loc[csv_data_read['DUTs'] == device_name]
             csv_dict = data.set_index('DUTs').T.to_dict()
@@ -112,7 +127,7 @@ class VersaLib:
             if 'ORG_ID' in self.__dict__:
                 self.ORG_ID = int(self.ORG_ID)
                 self.vxlan_tvi_interface = self.ORG_ID * 2
-                self.esp_tvi_interface = self.ORG_ID * 2 +1
+                self.esp_tvi_interface = self.ORG_ID * 2 + 1
                 self.start_vrf_id = self.ORG_ID * 10 + 120
                 self.ptvi_intf_wc1 = "ptvi" + str(self.ORG_ID * 2)
                 self.ptvi_intf_wc2 = "ptvi" + str(self.ORG_ID * 2 + 1)
@@ -120,19 +135,38 @@ class VersaLib:
                 self.Site_id = int(self.Site_id)
             if 'LCC' in self.__dict__:
                 self.LCC = int(self.LCC)
-            print 'LCC' in self.__dict__
-            if 'device_type' in self.__dict__:
-                if self.device_type == 'versa_director':
-                    self.vdhead = 'https://' + self.mgmt_ip + ':9182'
-                    self.vddata_dict = self.__dict__
-                else:
-                    self.vddata = csv_data_read.loc[csv_data_read['device_type'] == 'versa_director']
-                    self.vdcsv_dict = self.vddata.set_index('DUTs').T.to_dict()
-                    self.vddata_dict = {}
-                    for i, k  in self.vdcsv_dict['VD1'].iteritems():
-                        self.vddata_dict[i] = k
-                    self.vdhead = 'https://' + self.vddata_dict['mgmt_ip'] + ':9182'
+            #print 'LCC' in self.__dict__
+        if 'device_type' in self.__dict__:
+            if self.device_type == 'versa_director':
+                self.vdhead = 'https://' + self.mgmt_ip + ':9182'
+                self.vddata_dict = self.__dict__
+            else:
+                self.vddata = csv_data_read.loc[csv_data_read['device_type'] == 'versa_director']
+                self.vdcsv_dict = self.vddata.set_index('DUTs').T.to_dict()
+                self.vddata_dict = {}
+                for i, k  in self.vdcsv_dict['VD1'].iteritems():
+                    self.vddata_dict[i] = k
+                self.vdhead = 'https://' + self.vddata_dict['mgmt_ip'] + ':9182'
+        self.main_logger = self.setup_logger(device_name, 'MAIN', level=logging.DEBUG)
         logger.info("intialized", also_console=True)
+
+    def setup_logger(self, name, filename, level=logging.DEBUG):
+        # name = self.Device_name
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        formatter1 = logging.Formatter("%(message)s")
+        console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
+        console.setFormatter(formatter)
+        logging.getLogger('').addHandler(console)
+        log_file = logfile_dir + filename + ".log"
+        handler = logging.FileHandler(log_file)
+        handler.setFormatter(formatter)
+        logger = logging.getLogger(name)
+        logger.setLevel(level)
+        logger.addHandler(handler)
+        logger = logging.getLogger(name)
+        self.logfile = log_file
+        return logger
 
     def get_data_dict(self):
         return self.__dict__
@@ -304,7 +338,7 @@ class VersaLib:
         self.shell_nc = ConnectHandler(**device_dict)
         print self.shell_nc
         print self.shell_nc.send_command_expect('sudo bash', expect_string='password')
-        print self.shell_nc.send_command_expect('versa123', expect_string='#')
+        print self.shell_nc.send_command_expect('versa123', expect_string='\~|#')
         print self.shell_nc.send_command_expect('exit', expect_string='\$|#')
         # ur = self.shell_nc.send_command_expect('ls -ltr')
         # print ur
@@ -368,14 +402,13 @@ class VersaLib:
                                  headers=headers,
                                  json=json_data,
                                  verify=False)
-        print response.content
-        print response
+        self.main_logger.info(response)
 
-        if response.status_code == '200':
+        if response.status_code == 200:
             return 'PASS'
         else:
-            print response.content
-            return 'FAIL'
+            self.main_logger.info(response.content)
+            return 'FAIL : ' + str(response.content)
         # data = response.json()
         # print data
         # taskid = str(data['output']['result']['task']['task-id'])
@@ -460,7 +493,7 @@ class VersaLib:
                 print AE
                 get_CPE_name = ""
             print get_CPE_name
-            return "FAILED : " + str(task_result_cons)
+            return str(task_result_cons)
         else:
             #return "PASSED : " + str(task_result)
             return "PASS"
@@ -483,6 +516,25 @@ class VersaLib:
 
     def check_vsh_status(self):
         pass
+
+    def request_sync_from_device(self, net_connect, device):
+        cmd = "request devices device " + device + " sync-from"
+        print "CMD>> : " + cmd
+        output = net_connect.send_command_expect(cmd, strip_prompt=False, strip_command=False, max_loops=5000)
+        print output
+        return str(" result true" in output)
+
+    def get_controllers_info(self):
+        data1 = self.get_operation(read_controllers_url, headers3)
+        print data1
+        self.Controllers_list = []
+        for i in data1['versanms.sdwan-controller-list']:
+            self.Controllers_list.append(i['controllerName'])
+        return self.Controllers_list
+
+    def get_controller_detail(self, host_name):
+
+        return
 
     def get_device_info(self):
         #abc.get_operation(template_url+"/"+ PS_template_name, headers3)
@@ -540,12 +592,19 @@ class VersaLib:
         template = env.get_template(template_name)
         return template.render(self.__dict__)
 
+    def load_and_create_template(self, template_name):
+        curr_file_loader = FileSystemLoader(curr_file_dir + "/libraries/J2_temps/ORG_CREATION")
+        curr_env = Environment(loader=curr_file_loader)
+        template = curr_env.get_template(template_name)
+        template = env.get_template(template_name)
+        return template.render(self.__dict__)
+
     def device_config_commands(self, nc_handler, cmds):
-        nc_handler.config_mode(config_command='config private')
-        nc_handler.check_config_mode()
+        self.main_logger.info(nc_handler.config_mode(config_command='config private'))
+        self.main_logger.info(nc_handler.check_config_mode())
         for cmd in cmds.split("\n"):
-            print nc_handler.send_command_expect(cmd, expect_string='%', strip_prompt=False, strip_command=False)
-        print nc_handler.send_command_expect('commit and-quit', expect_string='>', strip_prompt=False, strip_command=False)
+            self.main_logger.info(nc_handler.send_command_expect(cmd, expect_string='%', strip_prompt=False, strip_command=False))
+        self.main_logger.info(nc_handler.send_command_expect('commit and-quit', expect_string='>', strip_prompt=False, strip_command=False))
 
     def device_config_commands_wo_split(self, nc_handler, cmds):
         # nc_handler.config_mode(config_command='config private')
@@ -584,58 +643,103 @@ class VersaLib:
         print cpe_shell_login.send_command_expect(self.Staging_command_template, expect_string='\$|#')
         time.sleep(20)
 
-    def create_PS_and_DG(self, Post_staging_template, Device_group_template, PS_main_template_modify):
-        self.ps_template_body = self.create_template(Post_staging_template)
-        self.DG_template_body = self.create_template(Device_group_template)
+#    def create_PS_and_DG(self, Post_staging_template, Device_group_template, PS_main_template_modify):
+    def create_PS_and_DG(self):
+        # self.main_logger = self.setup_logger('Versa-director', 'Onboarding')
+        curr_file_loader = FileSystemLoader(curr_file_dir + "/libraries/J2_temps/Solution/" + self.Solution_type)
+        curr_env = Environment(loader=curr_file_loader)
+        # template = curr_env.get_template(org_template)
+        ps_template = curr_env.get_template("Post_staging_template.j2")
+        DG_template = curr_env.get_template("Device_group_template.j2")
+        PS_main_template = curr_env.get_template("PS_main_template_modify.j2")
+
+        self.ps_template_body = ps_template.render(self.__dict__)
+        self.DG_template_body = DG_template.render(self.__dict__)
+        PS_main_template_modify = PS_main_template.render(self.__dict__)
         print self.ps_template_body
         print self.DG_template_body
-        self.post_operation(template_url, headers3, self.ps_template_body)
+        self.main_logger.info(self.post_operation(template_url, headers3, self.ps_template_body))
         time.sleep(5)
         assoc_template_url = sfw_template_assc_url + self.PS_TEMPLATE_NAME + "/associations"
         assc_body = '[{"organization":"'+ self.ORG_NAME + '","serviceTemplate":"COMMON-SFW-TEMPLATE10"}]'
         print assc_body
-        self.post_operation(assoc_template_url, headers3, assc_body)
+        self.main_logger.info(self.post_operation(assoc_template_url, headers3, assc_body))
         time.sleep(5)
-        self.post_operation(template_url + "/deploy/" + self.PS_TEMPLATE_NAME + "?verifyDiff=true", headers3,
-                           self.ps_template_body)
+        self.main_logger.info(self.post_operation(template_url + "/deploy/" + self.PS_TEMPLATE_NAME + "?verifyDiff=true", headers3,
+                           self.ps_template_body))
         time.sleep(5)
-        self.get_operation(template_url + "/" + self.PS_TEMPLATE_NAME, headers3)
-        self.get_operation(assoc_template_url, headers3)
+        self.main_logger.info(self.get_operation(template_url + "/" + self.PS_TEMPLATE_NAME, headers3))
+        self.main_logger.info(self.get_operation(assoc_template_url, headers3))
         time.sleep(5)
-        self.Modify_main_template(PS_main_template_modify)
-        self.post_operation(device_grp_url, headers3, self.DG_template_body)
+        result = self.Modify_main_template(PS_main_template_modify)
+        self.main_logger.info(result)
+        self.main_logger.info(self.post_operation(device_grp_url, headers3, self.DG_template_body))
         time.sleep(5)
 
     def Modify_main_template(self, PS_main_template_modify):
-        self.ps_main_template_modify = self.create_template(PS_main_template_modify)
+        res_check = ""
+        # self.main_logger = self.setup_logger('Versa-director', 'Onboarding')
+        self.ps_main_template_modify = PS_main_template_modify
         print self.ps_main_template_modify
         self.vdnc = self.login(vd_login='yes')
-        self.device_config_commands(self.vdnc, self.ps_main_template_modify)
+        nc = self.vdnc
+        device_cmds = self.ps_main_template_modify
+        # self.main_logger.info(self.device_config_commands(self.vdnc, self.ps_main_template_modify))
+        self.main_logger.info(device_cmds)
+        result = self.device_config_commands_wo_split(nc, device_cmds)
+        self.main_logger.info(result)
+        if "syntax error:" in result:
+            res_check += "syntax error found."
+        elif "Error: element not found" in result:
+            res_check += "element not found error."
+        # else:
+        commit_result = nc.send_command_expect("commit", \
+                                               expect_string='%', \
+                                               strip_prompt=False, strip_command=False, max_loops=5000)
+        self.main_logger.info(commit_result)
+        if "No modifications to commit." in commit_result:
+            res_check += "No modifications to commit."
+        elif "Commit complete." in commit_result:
+            res_check += "Commit success."
+        else:
+            res_check += "Commit failed."
+        # self.main_logger.info(self.Device_name + " : " + res_check)
         self.close(self.vdnc)
+        return self.Device_name + " : " + res_check
 
-    def pre_onboard_work(self, Device_template, Staging_server_config_template, Staging_cpe_config_template):
-        self.DEVICE_template_body = self.create_template(Device_template)
-        self.Staging_config_template = self.create_template(Staging_server_config_template)
-        self.Staging_command_template = self.create_template(Staging_cpe_config_template)
-        print self.Staging_command_template
-        print self.DEVICE_template_body
-        self.post_operation(device_template_url, headers3, self.DEVICE_template_body)
+
+    def pre_onboard_work(self):
+        # self.main_logger = self.setup_logger('Versa-director', 'Onboarding')
+        #(self, Device_template, Staging_server_config_template, Staging_cpe_config_template):
+        curr_file_loader = FileSystemLoader(curr_file_dir + "/libraries/J2_temps/Solution/" + self.Solution_type)
+        curr_env = Environment(loader=curr_file_loader)
+        self.DEVICE_template = curr_env.get_template("Device_template.j2")
+        self.Staging_config = curr_env.get_template("Staging_server_config.j2")
+        self.Staging_command = curr_env.get_template("staging_cpe.j2")
+
+        self.DEVICE_template_body = self.DEVICE_template.render(self.__dict__)
+        self.Staging_config_template = self.Staging_config.render(self.__dict__)
+        self.Staging_command_template = self.Staging_command.render(self.__dict__)
+
+        self.main_logger.info(self.Staging_command_template)
+        self.main_logger.info(self.DEVICE_template_body)
+        self.main_logger.info(self.post_operation(device_template_url, headers3, self.DEVICE_template_body))
         time.sleep(5)
         task_id = self.rest_operation_ret_task_id(device_template_url + "/deploy/" + self.Device_name,
                                                  headers3)
         time.sleep(5)
-        print task_id
+        self.main_logger.info(task_id)
         task_state = "0"
         while task_state != "100":
             task_state = self.check_task_status(task_id)
         task_result = self.get_task_result(task_id)
         if task_result == "PASS":
-            print "Device deployed"
+            self.main_logger.info("Device deployed")
         else:
-            print "Device deployment failed"
+            self.main_logger.info("Device deployment failed")
             exit()
         get_device_data = self.get_operation(device_template_url + "/" + self.Device_name, headers3)
-        print get_device_data
+        self.main_logger.info(get_device_data)
         time.sleep(5)
         self.vdnc = self.login(vd_login='yes')
         self.device_config_commands(self.vdnc, self.Staging_config_template)
@@ -720,7 +824,7 @@ class VersaLib:
 
     def config_devices_template(self, nc, device_file, command_template_file):
         start_time = datetime.now()
-        main_logger = setup_logger('Versa-director', 'Config_devices_template')
+        main_logger = self.setup_logger('Versa-director', 'Config_devices_template')
         # print device_file
         # print command_template_file
         curr_file_dir = os.path.dirname(command_template_file)
@@ -783,108 +887,267 @@ class VersaLib:
             tempalte_dict[idx] = str(i['templateName'])
         return tempalte_dict
 
-    def Create_Org(self, org_template, org_data, org_name = ""):
-        curr_file_dir = os.path.dirname(org_template)
-        curr_file_name = os.path.basename(org_template)
-        curr_file_loader = FileSystemLoader(curr_file_dir)
-        curr_env = Environment(loader=curr_file_loader)
-        template = curr_env.get_template(curr_file_name)
-        csv_data_read = pd.read_csv(org_data)
-        if org_name != "":
-            csv_data_read = csv_data_read.loc[csv_data_read['ORG_NAME'] == org_name]
-        for idx, row in csv_data_read.iterrows():
-            res_check = ""
-            org_data = row.to_dict()
-            # print org_data
-            org_body =  template.render(org_data)
-            print org_body
-            self.post_operation(org_url, headers3, org_body)
-            time.sleep(5)
-            task_id = self.rest_operation_ret_task_id(org_url+ "/deploy/" + \
-                                                            org_data['ORG_NAME'], headers3, org_body)
-            time.sleep(5)
-            print task_id
-            task_state = "0"
-            while task_state != "100":
-                task_state = self.check_task_status(task_id)
-            task_result = self.get_task_result(task_id)
-            if task_result == "PASS":
-                print "Org deployed"
-            else:
-                print "Org deployment failed"
+    def Create_Controller_List(self,org_name, org_id, no_of_vrfs, nodes):
+        nodes_list = nodes.split(" ")
+        node_type = "WC"
+        for node in nodes_list:
+            if not self.ctlr_dict.has_key(node):
+                print "Enter Node is not availble ---> " + str(node)
                 exit()
-            get_device_data = self.get_operation(org_url + "/" + org_data['ORG_NAME'], headers3)
-            print get_device_data
-            time.sleep(5)
-            print org_data
+            else:
+                for i in self.ctlr_dict[node]:
+                    if i not in self.ctlr_list:
+                        self.ctlr_list.append(i)
+        for ctlr in ctlr_list:
+            self.Create_Node_Data(ctlr, "WC", org_name, org_id)
+        return self.ctlr_list
 
 
-    def Config_Node_Devices(self, device_name, org_name, node_template, node_data):
-        # nc = self.login()
-        curr_file_dir = os.path.dirname(node_template)
-        curr_file_name = os.path.basename(node_template)
-        curr_file_loader = FileSystemLoader(fileDir + "/libraries/J2_temps/ORG_CREATION")
-        curr_env = Environment(loader=curr_file_loader)
-        template = curr_env.get_template(curr_file_name)
-        csv_data_read = pd.read_csv(fileDir + "/Topology/" + node_data)
-        csv_data_read = csv_data_read.loc[csv_data_read['DEVICE_NAME'] == device_name]
-        csv_data_read = csv_data_read.loc[csv_data_read['ORG_NAME'] == org_name]
+    def Create_Gateway_List(self,org_name, org_id, no_of_vrfs, nodes):
+        nodes_list = nodes.split(" ")
+        for node in nodes_list:
+            if not self.gw_dict.has_key(node):
+                print "Enter Node is not availble ---> " + str(node)
+                exit()
+            else:
+                for i in self.gw_dict[node]:
+                    if i not in self.gw_list:
+                        self.gw_list.append(i)
+        for gw in gw_list:
+            self.Create_Node_Data(gw, "GW", org_name, org_id)
+        return self.gw_list
+
+    def Create_Node_Data(self, node_dev, node_type, org_name, org_id):
+        csv_data_read = pd.read_csv(curr_file_dir + "/Topology/" + node_type + ".csv")
+        csv_data_read = csv_data_read.loc[csv_data_read['DEVICE_NAME'] == node_dev]
+        csv_data_read = csv_data_read.loc[csv_data_read['ORG_NAME'] == "temporgname"]
         for idx, row in csv_data_read.iterrows():
             res_check = ""
-            org_data = row.to_dict()
-            for k, v in org_data.iteritems():
+            node_device_data = row.to_dict()
+            for k, v in node_device_data.iteritems():
+                if isinstance(v, str):
+                    if "temporgname" in v:
+                        v = v.replace("temporgname", str(org_name))
+                    if "temporgid" in v:
+                        v = v.replace("temporgid", str(org_id))
+                    if "tempdevicename" in v:
+                        v = v.replace("tempdevicename", str(node_dev))
+                    if re.search("^{", v):
+                        v = try_literal_eval(v)
+                    node_device_data[k] = v
                 if isinstance(v, float):
                     if math.isnan(v):
-                        org_data[k] = ""
-            if org_data['DEVICE_TYPE'] == "GW":
-                ORG_ID = int(org_data['ORG_ID'])
-                org_data['ORG_ID'] = int(org_data['ORG_ID'])
-                org_data['NO_OF_VRFS'] = int(org_data['NO_OF_VRFS'])
-                org_data['VRF1_ID']	=	ORG_ID * 10 + 120
-                org_data['VXLAN_TVI_INTERFACE']	=	"tvi-0/" + str(ORG_ID * 2)
-                org_data['ESP_TVI_INTERFACE']	=	"tvi-0/" + str(ORG_ID * 2 + 1)
-                # org_data['PAIRED_TVI_INTERFACE1']	=	"tvi-0/" + str(ORG_ID * 10 + 120)
-                # org_data['PAIRED_TVI_INTERFACE2']	=	"tvi-0/" + str(ORG_ID * 10 + 2020)
-                org_data['PTVI_INTERFACE1']	=	"ptvi" + str(ORG_ID * 2)
-                org_data['PTVI_INTERFACE2']	=	"ptvi" + str(ORG_ID * 2 + 1)
-                if org_data['GW_NUMBER'] == "1" :
-                    org_data['NNI1_VLAN']	=	ORG_ID * 10 + 120
-                elif org_data['GW_NUMBER'] == "2":
-                    org_data['NNI1_VLAN'] = ORG_ID * 10 + 2020
-                self.start_vlan = int(org_data['NNI1_VLAN'])
-                org_data['NNI_LAN'] = self.set_network_items(org_data['NNI1_SUBNET'])
-                org_data['PAIRED_TVI_LAN'] = self.set_network_items(org_data['PAIRED_TVI_SUBNET'])
+                        node_device_data[k] = ""
+                    else:
+                        node_device_data[k] = int(v)
+            node_device_data["DEVICE_TYPE"] = node_type
+            if node_type == "WC":
+                node_device_data["VNF_GWS"] = gw_dict[node_device_data['NODE']]
+                if RR_Clients.has_key(node_dev):
+                    node_device_data["RR_CLIENTS"] = RR_Clients[node_dev]
+                else:
+                    for k, v in RR_Clients.iteritems():
+                        if node_dev in RR_Clients[k]:
+                            if not k in RR_SERVER:
+                                node_device_data["RR_SERVER"] = k
+            if node_type == "GW":
+                node_device_data["WC_list"] = ctlr_dict[node_device_data['NODE']]
+            node_device_data["LCC"] = LCC_dict[node_device_data['NODE']]
+            self.ndb[node_dev] = node_device_data
+        return
 
-                org_data['EXPORT_VRFS_SET'] = ""
-                org_data['LAN_VRFS_SET'] = ""
-                org_data['PAIRED_TVI_INTERFACE_SET'] =""
-                org_data['MPLS_NW_SET'] = ""
-                for i in range(1, org_data['NO_OF_VRFS'] + 1):
-                    org_data['EXPORT_VRFS_SET'] += org_data['ORG_NAME'] + "-EXPORT" + str(i) + "-VRF "
-                    org_data['LAN_VRFS_SET'] += org_data['ORG_NAME'] + "-LAN" + str(i) + "-VRF "
-                    org_data['PAIRED_TVI_INTERFACE_SET'] += "tvi-0/" + str(ORG_ID * 10 + 120  + i-1) + ".0 "
-                    org_data['PAIRED_TVI_INTERFACE_SET'] += "tvi-0/" + str(ORG_ID * 10 + 2020  + i-1) + ".0 "
-                    org_data['MPLS_NW_SET'] += org_data['ORG_NAME'] + "-MPLS" + str(i) + " "
-            device_cmds =  template.render(org_data)
-            print device_cmds
-        #     result = self.device_config_commands_wo_split(nc, device_cmds)
-        #     print result
-        #     if "syntax error:" in result:
-        #         res_check += "syntax error found."
-        #     elif "Error: element not found" in result:
-        #         res_check += "element not found error."
-        #     # else:
-        #     commit_result = nc.send_command_expect("commit", \
-        #                                            expect_string='%', \
-        #                                            strip_prompt=False, strip_command=False, max_loops=5000)
-        #     print commit_result
-        #     if "No modifications to commit." in commit_result:
-        #         res_check += "No modifications to commit."
-        #     elif "Commit complete." in commit_result:
-        #         res_check += "Commit success."
-        #     else:
-        #         res_check += "Commit failed."
-        #
+
+
+
+    def Create_Org(self, org_name, org_id, WC_list, no_of_vrfs):
+        # main_logger = self.setup_logger('Versa-director', 'Create_org')
+        org_template = "org_creation_template.j2"
+        org_data = "ORG_DATA.csv"
+        # curr_file_dir = os.path.dirname(org_template)
+        # curr_file_name = os.path.basename(org_template)
+        # curr_file_loader = FileSystemLoader(curr_file_dir)
+        # curr_env = Environment(loader=curr_file_loader)
+        # template = curr_env.get_template(curr_file_name)
+        # curr_file_dir = os.path.curdir
+        curr_file_loader = FileSystemLoader(curr_file_dir + "/libraries/J2_temps/ORG_CREATION")
+        curr_env = Environment(loader=curr_file_loader)
+        template = curr_env.get_template(org_template)
+        # csv_data_read = pd.read_csv(curr_file_dir + "/Topology/" + org_data)
+        # # csv_data_read = pd.read_csv(org_data)
+        # if org_name != "":
+        #     csv_data_read = csv_data_read.loc[csv_data_read['ORG_NAME'] == "temporgname"]
+        # for idx, row in csv_data_read.iterrows():
+        res_check = ""
+        self.org_data = {}
+        # print self.org_data
+        self.org_data['NO_OF_VRFS'] = int(no_of_vrfs)
+        self.org_data['ORG_ID'] = int(org_id)
+        self.org_data['ORG_NAME'] = org_name
+        self.org_data['CONTROLLERS'] = WC_list
+        print org_id
+        if int(org_id) in range(1, 207):
+            print "org_id is ok "
+        else:
+            print " org id entered is not range 1 - 206"
+            return "FAIL:  org id entered is not range 1 - 206. Enter ORG ID : " + org_id
+        org_body =  template.render(self.org_data)
+        self.WC_list = WC_list
+        # self.GW_list = self.org_data['GATEWAYS'].replace('"', "").split(", ")
+        self.main_logger.debug(org_body)
+        # return "PASS"
+        result = self.post_operation(org_url, headers3, org_body)
+        self.main_logger.info(result)
+        if "error" in result:
+            print "Error occured : " + result
+            return result
+        time.sleep(5)
+        task_id = self.rest_operation_ret_task_id(org_url+ "/deploy/" + \
+                                                        self.org_data['ORG_NAME'], headers3, org_body)
+        time.sleep(5)
+        self.main_logger.info(task_id)
+        task_state = "0"
+        while task_state != "100":
+            task_state = self.check_task_status(task_id)
+        task_result = self.get_task_result(task_id)
+        self.main_logger.info(task_result)
+        return task_result
+        if task_result == "PASS":
+            self.main_logger.info("Org deployed")
+        else:
+            self.main_logger.info("Org deployment failed")
+            return "FAIL: " + task_result
+        get_device_data = self.get_operation(org_url + "/" + self.org_data['ORG_NAME'], headers3)
+        print get_device_data
+        time.sleep(5)
+        self.main_logger.info(self.org_data)
+        return task_result
+
+    def Config_Node_Devices(self, device_name, node_type, nodes, action="set", **kwargs):
+        # main_logger = self.setup_logger('Versa-director', 'Create_org')
+        nc = self.login()
+        # nc = "xyz"
+        org_name = self.org_data['ORG_NAME']
+        # curr_file_dir = os.path.dirname(node_template)
+        # curr_file_name = os.path.basename(node_template)
+        curr_file_loader = FileSystemLoader(curr_file_dir + "/libraries/J2_temps/ORG_CREATION")
+        curr_env = Environment(loader=curr_file_loader)
+        template = curr_env.get_template(node_type+"_Template.j2")
+
+        csv_data_read = pd.read_csv(curr_file_dir + "/Topology/" + node_type + ".csv")
+        csv_data_read = csv_data_read.loc[csv_data_read['DEVICE_NAME'] == device_name]
+        csv_data_read = csv_data_read.loc[csv_data_read['ORG_NAME'] == "temporgname"]
+        res_check = ""
+        org_data = self.ndb[device_name]
+        if org_data['DEVICE_TYPE'] == "WC":
+            ORG_ID = int(org_data['ORG_ID'])
+            org_data['ORG_ID'] = int(org_data['ORG_ID'])
+            # org_data['NO_OF_VRFS'] = int(org_data['NO_OF_VRFS'])
+            org_data['VRF1_ID']	=	ORG_ID * 10 + 120
+            org_data['VXLAN_TVI_INTERFACE']	=	"tvi-0/" + str(ORG_ID * 2)
+            org_data['ESP_TVI_INTERFACE']	=	"tvi-0/" + str(ORG_ID * 2 + 1)
+            org_data['PTVI_INTERFACE1']	=	"ptvi" + str(ORG_ID * 2)
+            org_data['PTVI_INTERFACE2']	=	"ptvi" + str(ORG_ID * 2 + 1)
+
+            org_data['EXPORT_VRFS_SET'] = ""
+            org_data['LAN_VRFS_SET'] = ""
+            org_data['PAIRED_TVI_INTERFACE_SET'] =""
+            org_data['MPLS_NW_SET'] = ""
+            dup_rrc_list = []
+            org_data['RRCDICT'] = {}
+            org_data['RRSDICT'] = {}
+            if org_data.has_key('RR_CLIENTS'):
+                for RRC in org_data['RR_CLIENTS']:
+                    if self.ndb.has_key(RRC):
+                        org_data['RRCDICT'][RRC] = self.ndb[RRC]
+                        dup_rrc_list.append(RRC)
+                    # else:
+                    #     org_data['RR_CLIENTS'].remove(RRC)
+            org_data['RR_CLIENTS'] = dup_rrc_list
+            if org_data.has_key('RR_SERVER') :
+                if org_data['RR_SERVER'] != "":
+                    if self.ndb.has_key(org_data['RR_SERVER']):
+                        org_data['RRSDICT'] = self.ndb[org_data['RR_SERVER']]
+            org_data["GWDICT"] = {}
+            print org_data['NODE']
+            print nodes
+            if org_data['NODE'] in nodes:
+                for VNF_GW in org_data['VNF_GWS']:
+                    org_data["GWDICT"][VNF_GW] = self.ndb[VNF_GW]
+            else:
+                org_data['VNF_GWS'] = []
+            print org_data
+            # for i in range(1, org_data['NO_OF_VRFS'] + 1):
+            #     org_data['EXPORT_VRFS_SET'] += org_data['ORG_NAME'] + "-EXPORT" + str(i) + "-VRF "
+            #     org_data['LAN_VRFS_SET'] += org_data['ORG_NAME'] + "-LAN" + str(i) + "-VRF "
+            #     org_data['PAIRED_TVI_INTERFACE_SET'] += "tvi-0/" + str(ORG_ID * 10 + 120  + i-1) + ".0 "
+            #     org_data['PAIRED_TVI_INTERFACE_SET'] += "tvi-0/" + str(ORG_ID * 10 + 2020  + i-1) + ".0 "
+            #     org_data['MPLS_NW_SET'] += org_data['ORG_NAME'] + "-MPLS" + str(i) + " "
+        if org_data['DEVICE_TYPE'] == "GW":
+            if kwargs['no_of_vrfs']:
+                org_data['NO_OF_VRFS'] = int(kwargs['no_of_vrfs'])
+            ORG_ID = int(org_data['ORG_ID'])
+            org_data['ORG_ID'] = int(org_data['ORG_ID'])
+            # org_data['NO_OF_VRFS'] = int(org_data['NO_OF_VRFS'])
+            org_data['VRF1_ID']	=	ORG_ID * 10 + 120
+            org_data['VXLAN_TVI_INTERFACE']	=	"tvi-0/" + str(ORG_ID * 2)
+            org_data['ESP_TVI_INTERFACE']	=	"tvi-0/" + str(ORG_ID * 2 + 1)
+            # org_data['PAIRED_TVI_INTERFACE1']	=	"tvi-0/" + str(ORG_ID * 10 + 120)
+            # org_data['PAIRED_TVI_INTERFACE2']	=	"tvi-0/" + str(ORG_ID * 10 + 2020)
+            org_data['PTVI_INTERFACE1']	=	"ptvi" + str(ORG_ID * 2)
+            org_data['PTVI_INTERFACE2']	=	"ptvi" + str(ORG_ID * 2 + 1)
+            org_data['PTVI_INTERFACES'] = {}
+            org_data['PTVI_INTERFACES'][1] = "ptvi" + str(ORG_ID * 2)
+            org_data['PTVI_INTERFACES'][2] = "ptvi" + str(ORG_ID * 2 + 1)
+            if org_data['GW_NUMBER'] == 1 :
+                org_data['NNI1_VLAN']	=	ORG_ID * 10 + 120
+            elif org_data['GW_NUMBER'] == 2:
+                org_data['NNI1_VLAN'] = ORG_ID * 10 + 1020
+            self.start_vlan = int(org_data['NNI1_VLAN'])
+            org_data['NNI_LAN'] = self.set_network_items(org_data['NNI1_SUBNET'])
+            org_data['PAIRED_TVI_LAN'] = self.set_network_items(org_data['PAIRED_TVI_SUBNET'])
+
+            org_data['EXPORT_VRFS_SET'] = ""
+            org_data['LAN_VRFS_SET'] = ""
+            org_data['PAIRED_TVI_INTERFACE_SET'] =""
+            org_data['MPLS_NW_SET'] = ""
+            org_data['WC_LIST'] = ctlr_dict[org_data['NODE']]
+            org_data['WCDICT'] = {}
+            for WC in org_data['WC_LIST']:
+                org_data['WCDICT'][WC] = self.ndb[WC]
+
+            for i in range(1, org_data['NO_OF_VRFS'] + 1):
+                org_data['EXPORT_VRFS_SET'] += org_data['ORG_NAME'] + "-EXPORT" + str(i) + "-VRF "
+                org_data['LAN_VRFS_SET'] += org_data['ORG_NAME'] + "-LAN" + str(i) + "-VRF "
+                org_data['PAIRED_TVI_INTERFACE_SET'] += "tvi-0/" + str(ORG_ID * 10 + 120  + i-1) + ".0 "
+                org_data['PAIRED_TVI_INTERFACE_SET'] += "tvi-0/" + str(ORG_ID * 10 + 2020  + i-1) + ".0 "
+                org_data['MPLS_NW_SET'] += org_data['ORG_NAME'] + "-MPLS" + str(i) + " "
+        device_cmds =  template.render(org_data)
+        template_source = curr_env.loader.get_source(curr_env, node_type+"_Template.j2")[0]
+        parsed_content = curr_env.parse(template_source)
+        variables = meta.find_undeclared_variables(parsed_content)
+        print variables
+        if action == "delete":
+            device_cmds = re.sub("^set ", "delete ", device_cmds, flags=re.M)
+        self.main_logger.info(device_cmds)
+        # return "PASS"
+        result = self.device_config_commands_wo_split(nc, device_cmds)
+        self.main_logger.info(result)
+        if "syntax error:" in result:
+            res_check += "syntax error found."
+        elif "Error: element not found" in result:
+            res_check += "element not found error."
+        # else:
+        commit_result = nc.send_command_expect("commit", \
+                                               expect_string='%', \
+                                               strip_prompt=False, strip_command=False, max_loops=5000)
+        self.main_logger.info(commit_result)
+        if "No modifications to commit." in commit_result:
+            res_check += "No modifications to commit."
+        elif "Commit complete." in commit_result:
+            res_check += "Commit success."
+        else:
+            res_check += "Commit failed."
+        self.main_logger.info(org_data['DEVICE_NAME'] + " : " + res_check)
         return res_check
 
 
@@ -893,14 +1156,17 @@ def main():
     print datetime.now()
     cpe1 = VersaLib('VD1', topofile=fileDir + "/Topology/Devices.csv")
     # #
-    # # # cpe1.Create_Org(org_template=fileDir + "/libraries/J2_temps/org_creation_template.j2", org_data=fileDir + "/Topology/ORG_DATA.csv")
-    # cpe1.Create_Org(org_template=fileDir + "/libraries/J2_temps/org_creation_template.j2", org_data=fileDir + "/Topology/ORG_DATA.csv",org_name="AUTO_ORG_3")
-#     result = cpe1.Config_Node_Devices("NV-WC01-N2-BLR", "AADEC26", node_template="WC_Template.j2", node_data="WC.csv")
-#     result = cpe1.Config_Node_Devices("NV-WC02-N2-BLR", "AADEC26", node_template="WC_Template.j2", node_data="WC.csv")
-#     result = cpe1.Config_Node_Devices("NV-WC01-N4-MUM", "AADEC26", node_template="WC_Template.j2", node_data="WC.csv")
-#     result = cpe1.Config_Node_Devices("NV-WC02-N4-MUM", "AADEC26", node_template="WC_Template.j2", node_data="WC.csv")
-# #GW
-    result = cpe1.Config_Node_Devices("NV-GW01-N2-BLR", "AADEC26", node_template="GW_Template.j2", node_data="GW.csv")
+    # # cpe1.Create_Org(org_template=fileDir + "/libraries/J2_temps/org_creation_template.j2", org_data=fileDir + "/Topology/ORG_DATA.csv")
+    # cpe1.Create_Org(org_template=fileDir + "/libraries/J2_temps/ORG_CREATION/org_creation_template.j2", org_data=fileDir + "/Topology/ORG_DATA.csv", org_name="JAN18")
+    # result = cpe1.Config_Node_Devices("NV-WC01-N2-BLR", "JAN18", node_template="WC_Template.j2", node_data="WC.csv")
+    # result = cpe1.Config_Node_Devices("NV-WC02-N2-BLR", "JAN18", node_template="WC_Template.j2", node_data="WC.csv")
+    # result = cpe1.Config_Node_Devices("NV-WC01-N4-MUM", "JAN18", node_template="WC_Template.j2", node_data="WC.csv")
+    # result = cpe1.Config_Node_Devices("NV-WC02-N4-MUM", "JAN18", node_template="WC_Template.j2", node_data="WC.csv")
+##GW
+    result = cpe1.Config_Node_Devices("NV-GW01-N2-BLR", "JAN18", node_template="GW_Template.j2", node_data="GW.csv")
+    result = cpe1.Config_Node_Devices("NV-GW02-N2-BLR", "JAN18", node_template="GW_Template.j2", node_data="GW.csv")
+    result = cpe1.Config_Node_Devices("NV-GW01-N4-MUM", "JAN18", node_template="GW_Template.j2", node_data="GW.csv")
+    result = cpe1.Config_Node_Devices("NV-GW02-N4-MUM", "JAN18", node_template="GW_Template.j2", node_data="GW.csv")
 
     # print result
     # cpe1 = VersaLib('AADEC26_CPE1_MUM', topofile=fileDir + "/Topology/Devices.csv")
@@ -908,7 +1174,7 @@ def main():
     # temp_data = cpe1.get_PS_templates()
     # for idx , i in  temp_data.iteritems():
     #     main_logger.info(i)
-    # cpe1 = VersaLib('CPE42', topofile=fileDir + "/Topology/Devices.csv")
+    cpe1 = VersaLib('JAN18_CPE2_BLR', topofile=fileDir + "/Topology/Devices.csv")
     # # print cpe1.ESP_IP
     # # val =  cpe1.get_data_dict()
     # # print val['ORG_NAME']

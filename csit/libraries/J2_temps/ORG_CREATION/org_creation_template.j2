@@ -5,7 +5,7 @@
     "parentOrg": "Colt",
     "ikeAuthType": "psk",
     "sharedControlPlane": false,
-    "controllers": [{{ CONTROLLERS }}],
+    "controllers": {{ CONTROLLERS|replace("'", '"') }},
     "vrfs": [
     {%- for VRF in range(NO_OF_VRFS) -%}
     {%- set lan_number = VRF + 1 -%}

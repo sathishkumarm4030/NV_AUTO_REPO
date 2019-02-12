@@ -56,7 +56,8 @@ def Do_New_Org_Deployment():
     main_logger.info("ORG NAME:" + org_name)
     run_result = ""
     print "AVAILBALE NODEs:" + str(VD1.ctlr_dict.keys())
-    nodes = raw_input("Enter Node names. eg: MUM LON\n")
+    nodes = raw_input("Enter Node names. eg: MUM BLR\n")
+    nodes = nodes.upper()
     # nodes = "BLR"
     WC_list = VD1.Create_Controller_List(org_name, org_id, no_of_vrfs, nodes)
     GW_list = VD1.Create_Gateway_List(org_name, org_id, no_of_vrfs, nodes)

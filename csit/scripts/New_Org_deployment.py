@@ -13,8 +13,8 @@ else:
 
 # print fileDir
 Par_Dir = os.path.dirname(fileDir)
-print Par_Dir
-# sys.path.append(Par_Dir)
+# print Par_Dir
+sys.path.append(Par_Dir)
 
 from csit.libraries.VersaLib import VersaLib
 

@@ -11,10 +11,10 @@ if __name__ == "__main__":
 else:
     fileDir = os.path.dirname(os.path.realpath('__file__'))
 
-print fileDir
+# print fileDir
 Par_Dir = os.path.dirname(fileDir)
 print Par_Dir
-sys.path.append(Par_Dir)
+# sys.path.append(Par_Dir)
 
 from csit.libraries.VersaLib import VersaLib
 
